@@ -1,7 +1,6 @@
 package model.logic;
 
 import java.awt.*;
-//Features == comparendo
 public class Features implements Comparable<Features> {
     private String type;
     private Properties properties;

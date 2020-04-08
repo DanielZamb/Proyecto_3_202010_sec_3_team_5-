@@ -1,7 +1,6 @@
 package model.data_structures;
 
 public class ListaEncadenada<T> implements IListaEncadenada<T>{
-
     private Nodo<T> primerNodo;
     private Nodo<T> ultimoNodo;
     private Nodo<T> primeroAntiguo;
@@ -16,11 +15,9 @@ public class ListaEncadenada<T> implements IListaEncadenada<T>{
         actual = null;
         iter = null;
     }
-
     public void Iterador(String ControlS,Nodo<T> primeroPersonal) throws Exception {
         iter = (IteratorLista<T>) new IteratorLista((ListaEncadenada<T>) this,ControlS,(Nodo<T>)primeroPersonal);
     }
-
     public Nodo<T> consultarActual() {
         return actual;
     }
@@ -47,7 +44,6 @@ public class ListaEncadenada<T> implements IListaEncadenada<T>{
     public void setTamanio(int tamanio) {
         this.tamanio = tamanio;
     }
-
     public void setPrimeroAntiguo(Nodo<T> primeroAntiguo) {
         this.primeroAntiguo = primeroAntiguo;
     }
@@ -72,24 +68,22 @@ public class ListaEncadenada<T> implements IListaEncadenada<T>{
         }
         tamanio = contador;
     }
-
+    public void appendNodeInPos(Nodo<T> nuevo, int pos){}
     public void AppendNode(Nodo<T> nuevo){
         primeroAntiguo = primerNodo;
         nuevo.setSiguiente((Nodo<T>) primerNodo);
         primerNodo = nuevo;
         tamanio++;
     }
-    public void appendNodeInPos(Nodo<T> nuevo, int pos){}
-    
-    public Nodo<T> ConsultarNodo(int pos){
+    public Nodo<T> ConsultarNodo(int pos_){
         Nodo<T> buscado = null;
-        if (pos==tamanio-1) buscado = ultimoNodo;
+        if (pos_==tamanio-1) buscado = ultimoNodo;
         else{
             int iterador = 0;
             Nodo<T> evaluado = primerNodo;
             boolean encontro = false;
             while(evaluado != null && !encontro){
-                encontro = (iterador == pos);
+                encontro = (iterador == pos_);
                 if (encontro) buscado = evaluado;
                 else {
                     evaluado = evaluado.getSiguiente();
@@ -116,3 +110,4 @@ public class ListaEncadenada<T> implements IListaEncadenada<T>{
         tamanio--;
     }
 }
+

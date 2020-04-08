@@ -43,4 +43,6 @@ public interface IArregloDinamico<K extends Comparable<K>>{
 	 */
 	K eliminar( K dato );
 
+	public void eliminarEnPos(int Pos);
+
 }

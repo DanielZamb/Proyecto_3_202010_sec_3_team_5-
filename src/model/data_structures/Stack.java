@@ -1,70 +1,31 @@
 package model.data_structures;
 
-public class Stack<T> extends ListaEncadenada implements IStack {
-    private Nodo<T> top;
-    private int tamanio;
-
-    public Stack(Nodo<T> primerNodo){
-        super(primerNodo);
-        top = (Nodo<T>) super.getPrimerNodo();
-        tamanio = super.getTamanio();
-
+public class Stack<T> implements StackI{
+    private Nodo<T> first;
+    // top of stack (most recently added node)
+    private int N;      // number of items
+    public boolean isEmpty() {
+        return first == null;
+    }  // Or: N == 0.  0
+    public int size()        {
+        return N;
     }
-    public boolean isEmpty()
-    {
-        boolean respuesta = false;
-        tamanio = super.getTamanio();
-        if (tamanio==0)
-        {
-            respuesta = true;
-        }
-        return respuesta;
+    public void push(Object item)   {  // Add item to top of stack.
+        T itemT = (T)item;
+        Nodo<T> oldfirst = first;
+        first = new Nodo<T>();
+        first.setInfo(itemT);
+        first.setSiguiente(oldfirst);
+        N++;
     }
-
-    public void push(Object nodo)
-    {
-        super.AppendNode((Nodo<T>)nodo);
-        top = (Nodo<T>)super.getPrimerNodo();
-        tamanio = super.getTamanio();
-
+    public T pop()   {  // Remove item from top of stack.
+        T item = first.getInfo();
+        first = first.getSiguiente();
+        N--;
+        return item;
     }
-
-    public int getSize(){
-        tamanio = super.getTamanio();
-        return tamanio;
-    }
-
-    public Nodo<T> peek() {
-        return top;
-    }
-
-    public Nodo<T> pop()
-    {   Nodo<T> rta = top;
-        top = (Nodo<T>) top.getSiguiente();
-        super.deleteNode(0);
-        tamanio = super.getTamanio();
-        return rta;
-    }
-    /**
-     * Busca un nodo y cuenta a cuantas posiciones esta del principio de la pila
-     * @param buscado
-     * @return el numero de posiciones a las que se encuentra el nodo del tope de la pila
-     */
-    public int Buscar (Object buscado) {
-
-        int respuesta = 0;
-        Nodo<T> actual = top;
-        boolean done = false;
-
-        while (actual != null && !done)
-        {
-            if (actual.equals((Nodo<T>)buscado)) {
-                done=true;
-            }
-            else respuesta++;
-            actual = (Nodo<T>) actual.getSiguiente();
-        }
-        return respuesta;
-
+    public T peek(){
+        T item = first.getInfo();
+        return item;
     }
 }
