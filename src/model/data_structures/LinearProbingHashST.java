@@ -15,7 +15,7 @@ public class LinearProbingHashST<Key extends Comparable<Key>,Value> {
         keys = (Key[]) new Object[M];
         val = (Value[]) new Object[M];
     }
-    public int reviewSize(int cap){
+    private int reviewSize(int cap){
         ArrayList<Integer> temp = Primos.darPrimos(cap);
         for (int j=0; j < temp.size();j++)
             primos[j] = temp.get(j);
@@ -39,7 +39,7 @@ public class LinearProbingHashST<Key extends Comparable<Key>,Value> {
         val[i] = value;
         N++;
     }
-    public void resize(int capacity){
+    private void resize(int capacity){
         LinearProbingHashST<Key,Value> t = new LinearProbingHashST<>(capacity);
         for (int i = 0; i < M; i++)
             if (keys[i] != null)
@@ -82,5 +82,13 @@ public class LinearProbingHashST<Key extends Comparable<Key>,Value> {
         }
         return value;
     }
-    //implementar keys
+    public Queue<Key> keys(){
+        Queue<Key> keyQueue = new Queue<>();
+        for(int t=0; t<M ;t++){
+            if (keys[t]!=null){
+                keyQueue.enqueue(keys[t]);
+            }
+        }
+        return keyQueue;
+    }
 }
