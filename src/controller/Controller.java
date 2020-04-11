@@ -45,11 +45,16 @@ public class Controller {
 				view.printMessage("Loading...");
 				try {
 					Gson gson = new Gson();
-					String json = "./data/comparendos_dei_2018_BIG.geojson";
+					String json = "./data/comparendos_dei_2018_small.geojson";
 					BufferedReader br;
 					br = new BufferedReader(new FileReader(json));
 					Comparendos comparendos = gson.fromJson(br, Comparendos.class);
-					Modelo<Features> mdl = new Modelo(comparendos.darListaFeatures());
+					//revisar
+					view.printMessage("Ingrese tamaño de tabla de simbolos tipo \'Linear Probing\'");
+					int lp = lector.nextInt();
+					view.printMessage("Ingrese tamaño de tabla de simbolos tipo \'Separate Chaining\'");
+					int sc = lector.nextInt();
+					Modelo mdl = new Modelo(comparendos.darListaFeatures(),lp,sc);
 					modelo = mdl;
 					br.close();
 				} catch (FileNotFoundException e) {
@@ -57,45 +62,8 @@ public class Controller {
 					e.printStackTrace();
 				}
 			    view.printMessage("Datos Cargados.");
-			    view.printMessage("Primer comparendo del arreglo: " + modelo.getPrimerComparendo().toString() + "\n-----------------------------");
-			    view.printMessage("Ultimo comparendo del arreglo: "+ modelo.getUltimoComparendo().toString()+"\n-----------------------------");
 				break;
-				case 2:
-					view.printMessage("Loading...");
-					modelo.copiarComparendos();
-					view.printMessage("Arreglo Comparable[] creado");
-					view.printMessage("Tamaño del arreglo creado:" + modelo.getTamanio()+" comparendos");
-					break;
-				case 3:
-					view.printMessage("Sorting started");
-					view.printMessage("Loading...");
-					Features[] ordenado_S = modelo.ordenarShellSort(modelo.getCopia());
-					view.printMessage("Arreglo ordenado");
-					for (int i=0 ;i< ordenado_S.length-1;i++){
-						view.printMessage(ordenado_S[i].toString());
-						if (i == 10) view.printMessage("----------------------------------");
-					}
-					break;
-				case 4:
-					view.printMessage("Sorting started");
-					view.printMessage("Loading...");
-					Features[] ordenado_M = modelo.ordenarMergeSort(modelo.getCopia());
-					view.printMessage("Arreglo ordenado");
-					for (int i=0 ;i < ordenado_M.length-1;i++){
-						view.printMessage(ordenado_M[i].toString());
-						if (i == 10) view.printMessage("----------------------------------");
-					}
-					break;
-				case 5:
-					view.printMessage("Sorting started");
-					view.printMessage("Loading...");
-					Features[] ordenado_Q = modelo.ordenarQuickSort(modelo.getCopia());
-					view.printMessage("Arreglo ordenado");
-					for (int i=0 ;i < ordenado_Q.length-1;i++){
-						view.printMessage(ordenado_Q[i].toString());
-						if (i == 10) view.printMessage("----------------------------------");
-					}
-					break;
+
 			}
 		}
 		

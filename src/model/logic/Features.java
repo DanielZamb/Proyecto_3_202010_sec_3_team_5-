@@ -45,24 +45,10 @@ public class Features implements Comparable<Features>{
     @Override
     public int compareTo(Features that) {
         if (this.properties.getFECHA_HORA().equalsIgnoreCase(that.properties.getFECHA_HORA())) {
-            if (this.properties.getOBJECTID() > that.properties.getOBJECTID()) return 1;
-            if (this.properties.getOBJECTID().equals(that.properties.getOBJECTID())) return 0;
-            if (this.properties.getOBJECTID() < that.properties.getOBJECTID()) return -1;
+            return compareOb(that);
         } else {
-            String[] actual = this.properties.getFECHA_HORA().split("/");
-            int mes = Integer.parseInt(actual[1]);
-            int dia = Integer.parseInt(actual[2]);
-            String[] comp = that.properties.getFECHA_HORA().split("/");
-            int mComp = Integer.parseInt(comp[1]);
-            int dComp = Integer.parseInt(comp[2]);
-            if (mes == mComp) {
-                if (dia > dComp) return 1;
-                if (dia < dComp) return -1;
-            }
-            if (mes > mComp) return 1;
-            if (mes < mComp) return -1;
+            return compareDates(that);
         }
-        return -2;
     }
     public int compareToP(Features that){
             int comp = 0;
@@ -131,5 +117,48 @@ public class Features implements Comparable<Features>{
         if (comp > 0) return 1;
         if (comp < 0) return -1;
         else return 0;
+        }
+        public boolean equalsK(Features that){
+            boolean rta = false;
+                String fecha = that.getProperties().getFECHA_HORA();
+                String fechat = this.getProperties().getFECHA_HORA();
+                 if (fechat.equalsIgnoreCase(fecha))
+                     rta =true;
+                return rta;
+        }
+        public int compareOb(Features that){
+            if (this.properties.getOBJECTID() > that.properties.getOBJECTID()) return 1;
+            if (this.properties.getOBJECTID().equals(that.properties.getOBJECTID())) return 0;
+            if (this.properties.getOBJECTID() < that.properties.getOBJECTID()) return -1;
+            return -2;
+        }
+        public int compareDates(Features that){
+            String[] actual = this.properties.getFECHA_HORA().split("/");
+            int mes = Integer.parseInt(actual[1]);
+            int dia = Integer.parseInt(actual[2]);
+            String[] comp = that.properties.getFECHA_HORA().split("/");
+            int mComp = Integer.parseInt(comp[1]);
+            int dComp = Integer.parseInt(comp[2]);
+            if (mes == mComp) {
+                if (dia > dComp) return 1;
+                if (dia < dComp) return -1;
+            }
+            if (mes > mComp) return 1;
+            if (mes < mComp) return -1;
+            return -2;
+        }
+        public int compareClaseV(Features that){
+            if (this.getProperties().getFECHA_HORA().equalsIgnoreCase(that.getProperties().getFECHA_HORA())){
+                int comp = this.getProperties().getCLASE_VEHI().compareTo(that.getProperties().getCLASE_VEHI());
+                if (comp > 0) return 1;
+                if (comp < 0) return -1;
+                else return 0;
+            }
+            return -2;
+        }
+        public int compareInfrac(Features that){
+            if (this.getProperties().getCLASE_VEHI().equalsIgnoreCase(that.getProperties().getCLASE_VEHI()))
+                return compareToP(that);
+            return -2;
         }
 }

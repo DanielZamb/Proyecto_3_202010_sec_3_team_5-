@@ -17,6 +17,7 @@ public class SeparateChainingHashST<Key extends Comparable<Key>,Value> {
     }
     private int checkSize(int M){
         ArrayList<Integer> temp = Primos.darPrimos(M);
+        primos = new Integer[temp.size()];
         for (int j=0; j < temp.size();j++)
             primos[j] = temp.get(j);
         return primos[primos.length-1];
@@ -62,7 +63,12 @@ public class SeparateChainingHashST<Key extends Comparable<Key>,Value> {
         }
         return keyQueue;
     }
-
+    public int sizeM(){
+        return M;
+    }
+    public int sizeN(){
+        return N;
+    }
     //keys
 
 

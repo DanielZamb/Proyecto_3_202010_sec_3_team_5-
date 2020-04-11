@@ -12,11 +12,12 @@ public class LinearProbingHashST<Key extends Comparable<Key>,Value> {
     public LinearProbingHashST(int cap){
         N = 0;
         M = reviewSize(cap);
-        keys = (Key[]) new Object[M];
+        keys = (Key[]) new Comparable[M];
         val = (Value[]) new Object[M];
     }
     private int reviewSize(int cap){
         ArrayList<Integer> temp = Primos.darPrimos(cap);
+        primos = new Integer[temp.size()];
         for (int j=0; j < temp.size();j++)
             primos[j] = temp.get(j);
         return primos[primos.length-1];
@@ -90,5 +91,11 @@ public class LinearProbingHashST<Key extends Comparable<Key>,Value> {
             }
         }
         return keyQueue;
+    }
+    public int sizeM(){
+        return M;
+    }
+    public int sizeN(){
+        return N;
     }
 }
