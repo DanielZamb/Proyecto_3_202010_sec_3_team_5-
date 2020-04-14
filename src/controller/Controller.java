@@ -1,7 +1,6 @@
 package controller;
 
 import model.logic.*;
-import model.data_structures.*;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -10,9 +9,6 @@ import java.io.IOException;
 import java.util.Scanner;
 import com.google.gson.*;
 
-import model.logic.Comparendos;
-import model.logic.Features;
-import model.logic.Modelo;
 import view.View;
 
 public class Controller {
@@ -73,7 +69,50 @@ public class Controller {
 				}
 			    view.printMessage("Datos Cargados.");
 				break;
-
+				case 2:
+					view.printMessage("Ingrese la fecha de los comparendos a buscar: \nFormato YYYY/MM/DD");
+					String date = lector.next();
+					view.printMessage("Ingrese el tipo de vehiculo (en mayusculas) a buscar: ");
+					String type = lector.next();
+					view.printMessage("Ingrese la infraccion a buscar: ");
+					String infrac = lector.next();
+					Llave key = new Llave();
+					String keyS = key.keyA(date,type,infrac);
+					Features[] rta = modelo.Requerimiento1(keyS);
+					if (rta != null){
+						for(int i=0;i<rta.length;i++){
+						view.printMessage(rta[i].toString());
+						}
+					}
+					else
+						view.printMessage("no se encontraron comparendos con tal llave");
+					break;
+				case 3:
+					view.printMessage("Ingrese la fecha de los comparendos a buscar: \nFormato YYYY/MM/DD");
+					String date_ = lector.next();
+					view.printMessage("Ingrese el tipo de vehiculo (en mayusculas) a buscar: ");
+					String type_ = lector.next();
+					view.printMessage("Ingrese la infraccion a buscar: ");
+					String infrac_ = lector.next();
+					Llave key_ = new Llave();
+					String keyS_ = key_.keyA(date_,type_,infrac_);
+					Features[] rta_ = modelo.Requerimiento2(keyS_);
+					if (rta_ != null){
+						for(int i=0;i<rta_.length;i++){
+							view.printMessage(rta_[i].toString());
+						}
+					}
+					else
+						view.printMessage("no se encontraron comparendos con tal llave");
+					break;
+				case 4:
+					view.printMessage("loading...");
+					double[] rta4 = modelo.Rendimiento();
+					view.printMessage("||\t\t\t\t\t\t\t|| Linear Probing || Separate chaining ||");
+					view.printMessage("||Tiempo minimo de \'get()\'  || "+rta4[1]+"s || "+rta4[4]+"s ||");
+					view.printMessage("||Tiempo maximo de \'get()\'  || "+rta4[0]+"s || "+rta4[3]+"s ||");
+					view.printMessage("||Tiempo promedio de \'get()\'|| "+rta4[2]+"s || "+rta4[5]+"s ||");
+					break;
 			}
 		}
 		

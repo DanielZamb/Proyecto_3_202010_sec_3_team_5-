@@ -1,6 +1,7 @@
 package model.data_structures;
 
-import java.util.ArrayList;
+import model.logic.Primos;
+
 import java.util.Iterator;
 
 public class SeparateChainingHashST<Key extends Comparable<Key>,Value> {

@@ -1,6 +1,6 @@
 package model.data_structures;
 
-import java.util.ArrayList;
+import model.logic.Primos;
 
 public class LinearProbingHashST<Key extends Comparable<Key>,Value> {
     private double N;
