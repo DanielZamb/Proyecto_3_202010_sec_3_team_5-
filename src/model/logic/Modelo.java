@@ -1,12 +1,9 @@
 package model.logic;
 
 import model.data_structures.*;
-import org.jetbrains.annotations.NotNull;
 
 
-import java.awt.geom.Area;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Definicion del modelo del mundo
@@ -31,22 +28,22 @@ public class Modelo{
         mayorObj = null;
     }
 
-    public Modelo(List<Features> listaFeatures, int lp, int sc) {
-        cargarComparendos(listaFeatures,lp,sc);
+    public Modelo(List<Features> listaFeatures, int lp, int sc,Primos primos) {
+        cargarComparendos(listaFeatures,lp,sc,primos);
         objConMayorOBJID();
         MiniMax();
     }
 
-    public void cargarComparendos(List<Features> listaFeatures,int lp,int sc) {
+    public void cargarComparendos(List<Features> listaFeatures,int lp,int sc,Primos primos) {
         try {
             long startTime = System.nanoTime();
             comparableF = new Features[listaFeatures.size()];
             for (int i = 0; i<listaFeatures.size();i++){
                 comparableF[i] = listaFeatures.get(i);
             }
-            Quick.sort(comparableF,"normal");
-            this.lp = new LinearProbingHashST<>(lp);
-            this.sc = new SeparateChainingHashST<>(sc);
+            Quick.sort(comparableF,"Key");
+            this.lp = new LinearProbingHashST<>(lp,primos);
+            this.sc = new SeparateChainingHashST<>(sc,primos);
             Keys(comparableF,this.lp,this.sc);
             long endTime = System.nanoTime();
             long elapsedTime = endTime - startTime;
@@ -61,22 +58,31 @@ public class Modelo{
     }
 
     public void Keys(Features[] list,LinearProbingHashST lp, SeparateChainingHashST sc){
-        Features[] aux;
-        int k=0;
-        for(int j = 0 ; j< list.length ;j++){
-            String date = list[j].getProperties().getFECHA_HORA();
-            Boolean comp = false;
-            if (!(j == list.length - 1)) comp = list[j].equalsK(list[j + 1]);
-            if (!comp) {
-                aux = new Features[j+1];
-                for(;k<=j;k++){
-                    aux[k] = list[k];
-                }
-                Quick.sort(aux,"vehiculo");
-                
+        Llave dataPair = new Llave();
+        int l=0;
+        for(int j=0;j<list.length;j++){
+            int comp = 0;
+            if (!(j == list.length-1)) comp = list[j].compareKey(list[j+1]);
+            if (comp != 0) {
+                String key = dataPair.key(list[j]);
+                ArregloDinamico<Features> valuesTemp =  dataPair.getArr();
+                for (;l<=j;l++)
+                   valuesTemp.agregar(list[l]);
+                Features[] values = dataPair.values();
+                Quick.sort(values,"normal");
+                lp.put(key,values);
+                sc.put(key,values);
+                dataPair.getArr().clear();
             }
-            if (comp) {
-
+            if (j == list.length-1){
+                String key = dataPair.key(list[j]);
+                ArregloDinamico<Features> valuesTemp =  dataPair.getArr();
+                for (;l<=j;l++)
+                    valuesTemp.agregar(list[l]);
+                Features[] values = dataPair.values();
+                Quick.sort(values,"normal");
+                lp.put(key,values);
+                sc.put(key,values);
             }
 
         }

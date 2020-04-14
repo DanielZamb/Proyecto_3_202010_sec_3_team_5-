@@ -36,16 +36,26 @@ public class Controller {
 		boolean fin = false;
 		String dato = "";
 		String respuesta = "";
-
+		Primos primos = new Primos();
 		while( !fin ){
 			view.printMenu();
 			int option = lector.nextInt();
 			switch(option){
+				case 0:
+					view.printMessage("Loading...");
+					try{
+						view.printMessage("introduzca numero maximo de capacidad");
+						int num = lector.nextInt();
+						primos.darPrimos(num);
+					}catch (Exception e){
+						e.printStackTrace();
+					}
+					break;
 			case 1:
 				view.printMessage("Loading...");
 				try {
 					Gson gson = new Gson();
-					String json = "./data/comparendos_dei_2018_small.geojson";
+					String json = "./data/comparendos_dei_2018_BIG.geojson";
 					BufferedReader br;
 					br = new BufferedReader(new FileReader(json));
 					Comparendos comparendos = gson.fromJson(br, Comparendos.class);
@@ -54,7 +64,7 @@ public class Controller {
 					int lp = lector.nextInt();
 					view.printMessage("Ingrese tamaño de tabla de simbolos tipo \'Separate Chaining\'");
 					int sc = lector.nextInt();
-					Modelo mdl = new Modelo(comparendos.darListaFeatures(),lp,sc);
+					Modelo mdl = new Modelo(comparendos.darListaFeatures(),lp,sc,primos);
 					modelo = mdl;
 					br.close();
 				} catch (FileNotFoundException e) {

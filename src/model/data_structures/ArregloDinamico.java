@@ -113,6 +113,12 @@ public class ArregloDinamico<K> implements IArregloDinamico {
         }
 		elementos = copia;
     }
+    public void clear(){
+        for(int i=0;i<tamanoAct;i++){
+            elementos[i] = null;
+        }
+        tamanoAct = 0;
+    }
 }
 
 

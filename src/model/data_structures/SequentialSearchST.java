@@ -42,6 +42,7 @@ public class SequentialSearchST<Key extends Comparable<Key>, Value> implements I
                 actual.val = value;
                 return;
             }
+            actual = actual.next;
         }
         first = new Node(key, value, first);
     }

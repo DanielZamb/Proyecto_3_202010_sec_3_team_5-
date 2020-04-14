@@ -11,6 +11,8 @@ public class Quick {
             sortV((Features[]) list,0,list.length-1);
         else if (tipoSort.equalsIgnoreCase("infraccion"))
             sortP((Features[]) list,0,list.length-1);
+        else if (tipoSort.equalsIgnoreCase("key"))
+            sortG((Features[]) list,0,list.length-1);
     }
     private static void sort(Comparable[] list, int lo, int hi) {
         if (hi <= lo) return;
@@ -33,10 +35,27 @@ public class Quick {
         exch(list, lo, j);
         return j;
     }
-    public static void sortL(Features[] list){
-        StdRandom.shuffle(list);
-        sortL(list,0,list.length-1);
+    private static void sortG(Features[] list, int lo, int hi){
+        if (hi <= lo) return;
+        int j = partitionG(list, lo, hi);
+        sortG(list, lo, j - 1);
+        sortG(list, j + 1, hi);
     }
+    private static int partitionG(Features[] list, int lo, int hi) {
+        int i = lo;
+        int j = hi+1;
+        Features P = list[lo];
+        while (true) {
+            while (lessG(list[++i], P)) if (i == hi) break;
+            while (lessG(P, list[--j])) if (j == lo) break;
+            if (i >= j) break;
+            exch(list, i, j);
+        }
+        exch(list, lo, j);
+        return j;
+    }
+    private static boolean lessG(Features v, Features w)
+    { return v.compareKey(w) < 0; }
     private static void sortL(Features[] list, int lo, int hi){
         if (hi <= lo) return;
         int j = partitionL(list, lo, hi);
@@ -58,11 +77,6 @@ public class Quick {
     }
     private static boolean lessL(Features v, Features w)
     { return v.compareToL(w) < 0; }
-
-    public static void sortP(Features[] list){
-        StdRandom.shuffle(list);
-        sortP(list,0,list.length-1);
-    }
     private static void sortP(Features[] list, int lo, int hi){
         if (hi <= lo) return;
         int j = partitionP(list, lo, hi);
@@ -84,10 +98,6 @@ public class Quick {
     }
     private static boolean lessP(Features v, Features w)
     { return v.compareToP(w) < 0; }
-    public static void sortV(Features[] list){
-        StdRandom.shuffle(list);
-        sortV(list,0,list.length-1);
-    }
     private static void sortV(Features[] list, int lo, int hi){
         if (hi <= lo) return;
         int j = partitionV(list, lo, hi);

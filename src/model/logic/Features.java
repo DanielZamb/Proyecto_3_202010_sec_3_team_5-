@@ -118,14 +118,6 @@ public class Features implements Comparable<Features>{
         if (comp < 0) return -1;
         else return 0;
         }
-        public boolean equalsK(Features that){
-            boolean rta = false;
-                String fecha = that.getProperties().getFECHA_HORA();
-                String fechat = this.getProperties().getFECHA_HORA();
-                 if (fechat.equalsIgnoreCase(fecha))
-                     rta =true;
-                return rta;
-        }
         public int compareOb(Features that){
             if (this.properties.getOBJECTID() > that.properties.getOBJECTID()) return 1;
             if (this.properties.getOBJECTID().equals(that.properties.getOBJECTID())) return 0;
@@ -148,17 +140,17 @@ public class Features implements Comparable<Features>{
             return -2;
         }
         public int compareClaseV(Features that){
-            if (this.getProperties().getFECHA_HORA().equalsIgnoreCase(that.getProperties().getFECHA_HORA())){
                 int comp = this.getProperties().getCLASE_VEHI().compareTo(that.getProperties().getCLASE_VEHI());
                 if (comp > 0) return 1;
                 if (comp < 0) return -1;
                 else return 0;
-            }
-            return -2;
         }
-        public int compareInfrac(Features that){
-            if (this.getProperties().getCLASE_VEHI().equalsIgnoreCase(that.getProperties().getCLASE_VEHI()))
-                return compareToP(that);
-            return -2;
+        public int compareKey(Features that){
+           String thisKey = this.getProperties().getFECHA_HORA() + this.getProperties().getCLASE_VEHI() + this.getProperties().getINFRACCION();
+           String thatKey = that.getProperties().getFECHA_HORA() + that.getProperties().getCLASE_VEHI() + that.getProperties().getINFRACCION();
+           int comp =  thisKey.compareToIgnoreCase(thatKey);
+           if (comp > 0 ) return 1;
+           if (comp < 0 ) return -1;
+           else return 0;
         }
 }

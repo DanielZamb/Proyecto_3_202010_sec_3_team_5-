@@ -3,31 +3,47 @@ package model.data_structures;
 import java.util.ArrayList;
 
 public class LinearProbingHashST<Key extends Comparable<Key>,Value> {
-    private int N;
+    private double N;
     private int M = 43;
     private Key[] keys;
     private Value[] val;
-    private Integer[] primos;
+    private Primos primos;
 
-    public LinearProbingHashST(int cap){
+    public LinearProbingHashST(int cap,Primos primos){
         N = 0;
+        this.primos = primos;
         M = reviewSize(cap);
         keys = (Key[]) new Comparable[M];
         val = (Value[]) new Object[M];
     }
     private int reviewSize(int cap){
-        ArrayList<Integer> temp = Primos.darPrimos(cap);
-        primos = new Integer[temp.size()];
-        for (int j=0; j < temp.size();j++)
-            primos[j] = temp.get(j);
-        return primos[primos.length-1];
+        Boolean cent = false;
+        int hi  = primos.getPrimos().size()-1;
+        int lo = 0;
+        int mid = 0;
+        while(lo <= hi){
+            mid  = (hi+lo)/2;
+            if (primos.getPrimos().get(mid) == cap) { cent = true;return M;}
+            if (cap>primos.getPrimos().get(mid))
+                lo = mid + 1;
+            if(cap<primos.getPrimos().get(mid))
+                hi = mid-1;
+
+        }
+        if (!cent)
+            return primos.getPrimos().get(mid+1);
+        else{
+            return 0;
+        }
     }
     private int hash(Key key){
         return (key.hashCode() & 0x7fffffff) % M;
     }
     public void put (Key key, Value value){
-        if (N >= ((3/4)*M))
+        double loadF = (0.75)*M;
+        if (N >= loadF){
             resize(2*M);
+        }
         int i = 0; // contador en modulo
         for (i = hash(key) ; keys[i] != null ; i = (i+1) % M ){
             if (key.equals(keys[i])) {
@@ -41,7 +57,7 @@ public class LinearProbingHashST<Key extends Comparable<Key>,Value> {
         N++;
     }
     private void resize(int capacity){
-        LinearProbingHashST<Key,Value> t = new LinearProbingHashST<>(capacity);
+        LinearProbingHashST<Key,Value> t = new LinearProbingHashST<>(capacity,this.primos);
         for (int i = 0; i < M; i++)
             if (keys[i] != null)
                 t.put(keys[i], val[i]);
@@ -95,7 +111,7 @@ public class LinearProbingHashST<Key extends Comparable<Key>,Value> {
     public int sizeM(){
         return M;
     }
-    public int sizeN(){
+    public double sizeN(){
         return N;
     }
 }

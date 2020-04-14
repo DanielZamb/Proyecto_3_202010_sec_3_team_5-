@@ -7,30 +7,45 @@ public class SeparateChainingHashST<Key extends Comparable<Key>,Value> {
     private int N;
     private int M;
     private SequentialSearchST<Key,Value>[] st;
-    private Integer[] primos;
-    public SeparateChainingHashST(int M) {
-        this.M = checkSize(M);
+    private Primos primos;
+    public SeparateChainingHashST(int cap,Primos primos) {
+        this.primos = primos;
+        M = checkSize(cap);
         st = (SequentialSearchST<Key,Value>[]) new SequentialSearchST[M];
         for (int i=0; i<M; i++){
             st[i] = new SequentialSearchST<>(null);
         }
     }
     private int checkSize(int M){
-        ArrayList<Integer> temp = Primos.darPrimos(M);
-        primos = new Integer[temp.size()];
-        for (int j=0; j < temp.size();j++)
-            primos[j] = temp.get(j);
-        return primos[primos.length-1];
+        Boolean cent = false;
+        int hi  = primos.getPrimos().size()-1;
+        int lo = 0;
+        int mid = 0;
+        while(lo <= hi){
+            mid  = (hi+lo)/2;
+            if (primos.getPrimos().get(mid) == M) { cent = true;return M;}
+            if (M>primos.getPrimos().get(mid))
+                lo = mid + 1;
+            if(M<primos.getPrimos().get(mid))
+                hi = mid-1;
+
+        }
+        if (!cent)
+            return primos.getPrimos().get(mid+1);
+        else{
+            return 0;
+        }
     }
     private int hash(Key key){
-        return (key.hashCode() & 0x7fffffff) % M;
+        return (key.hashCode() & 0x7fffffff) % this.M;
     }
     public Value get(Key key){
         return (Value) st[hash(key)].get(key);
     }
     public void put(Key key, Value val){
-        if (N > (M/2))
+        if (N > ((double)M/2)){
             reSize(2*M);
+        }
         st[hash(key)].put(key,val);
         N++;
     }
@@ -40,8 +55,8 @@ public class SeparateChainingHashST<Key extends Comparable<Key>,Value> {
         return (Value) st[hash(key)].delete(key);
     }
     private void reSize(int M){
-        SeparateChainingHashST<Key, Value> s = new SeparateChainingHashST<>(M);
-        for(int j =0 ; j< M; j++){
+        SeparateChainingHashST<Key, Value> s = new SeparateChainingHashST<>(M,this.primos);
+        for(int j =0 ; j < this.M; j++){
             if (st[j] != null){
                 SequentialSearchST.Node actual = st[j].getFirst();
                 while(actual != null){
