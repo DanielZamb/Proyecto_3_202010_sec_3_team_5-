@@ -23,8 +23,12 @@ public class Queue<T> implements QueueI {
         N--;
         return item;
     }   // See page 155 for iterator() implementation.   // See page 150 for test client main().
-    public T peek() {
+    public T peekInfo() {
         T item  = first.getInfo();
         return item;
+    }
+    public Nodo<T> peekNode(){
+        Nodo<T> node = first;
+        return node;
     }
 }

@@ -5,6 +5,6 @@ public interface QueueI<T> {
     public int size();
     public void enqueue(T item);
     public T dequeue();
-    public T peek();
+    public T peekInfo();
 
 }

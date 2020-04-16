@@ -1,6 +1,8 @@
 package model.data_structures;
 
-public class RedBlackBST<Key extends Comparable<Key>, Value> {
+import java.util.Iterator;
+
+public class RedBlackBST<Key extends Comparable<Key>, Value> implements Iterable<Key>{
     private static final boolean RED = true;
     private static final boolean BLACK = false;
     private NodeRB root;
@@ -246,8 +248,112 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> {
                 return false;
         }
     }
+    public Iterator<Key> iterator(){
+        return new RedBlackIterator<Key>(this);
+    }
+    public Iterator<Key> iteratorInRange(Key min,Key max){
+        return new RedBlackIteratorInRange<Key>(this,min,max);
+    }
+    public Iterator<Value> iteratorInRValue(Value min, Value max){
+        return new RedBlackIteratorInRValue<Value>(this,min,max);
+    }
+    private void nodesQueue(NodeRB x,Queue<Key> queue){
+        if (x == null) return;
+        else if (is2Leaf(x)) {
+            queue.enqueue(x.key);
+            return;
+        }
+        else {
+            nodesQueue(x.left,queue);
+            queue.enqueue(x.key);
+            nodesQueue(x.right,queue);
+            return;
+        }
+    }
+    private void nodesQueueRK(NodeRB x,Queue<Key> queue,Key min,Key max){
+        if (x == null) return;
+        else if (x.key.equals(min) || x.key.equals(max)){
+            queue.enqueue(x.key);
+            return;
+        }
+        else {
+            nodesQueueRK(x.left,queue,min,max);
+            queue.enqueue(x.key);
+            nodesQueueRK(x.right,queue,min,max);
+            return;
+        }
+    }
+    private void nodesQueueRV(NodeRB x,Queue<Value> queue,Value min,Value max){
+        if (x == null) return;
+        else if (x.value.equals(min) || x.value.equals(max)){
+            queue.enqueue(x.value);
+            return;
+        }
+        else {
+            nodesQueueRV(x.left,queue,min,max);
+            queue.enqueue(x.value);
+            nodesQueueRV(x.right,queue,min,max);
+            return;
+        }
+    }
+    private class RedBlackIterator<Key extends Comparable<Key>> implements Iterator<Key>{
+        Queue<Key> queue = new Queue<>();
+        Nodo<Key> actual;
+        public RedBlackIterator(RedBlackBST<Key,Value> rbt) {
+            rbt.nodesQueue(rbt.root,queue);
+            actual = queue.peekNode();
+        }
+        public boolean hasNext(){
+            return (actual.getSiguiente() != null);
+        }
+        public Key next(){
+            actual = actual.getSiguiente();
+            return queue.dequeue();
+        }
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    }
+    private class RedBlackIteratorInRange<Key extends Comparable<Key>> implements Iterator<Key>{
+        Queue<Key> queue = new Queue<>();
+        Nodo<Key> actual;
+        public RedBlackIteratorInRange(RedBlackBST<Key,Value> rbt,Key min, Key max) {
+            rbt.nodesQueueRK(rbt.root,queue,min,max);
+            actual = queue.peekNode();
+        }
+        public boolean hasNext(){
+            return (actual.getSiguiente() != null);
+        }
+        public Key next(){
+            actual = actual.getSiguiente();
+            return queue.dequeue();
+        }
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    }
+    private class RedBlackIteratorInRValue<Value> implements Iterator<Value>{
+        Queue<Value> queue = new Queue<>();
+        Nodo<Value> actual;
+        public RedBlackIteratorInRValue(RedBlackBST<Key,Value> rbt,Value min, Value max) {
+            rbt.nodesQueueRV(rbt.root,queue,min,max);
+            actual = queue.peekNode();
+        }
+        public boolean hasNext(){
+            return (actual.getSiguiente() != null);
+        }
+        public Value next(){
+            actual = actual.getSiguiente();
+            return queue.dequeue();
+        }
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    }
     //implementar keys, keys in range, values in range
-
-
 }
+
+
+
+
 
