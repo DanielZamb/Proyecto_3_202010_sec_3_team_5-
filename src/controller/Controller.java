@@ -1,5 +1,6 @@
 package controller;
 
+import model.data_structures.ArregloDinamico;
 import model.logic.*;
 
 import java.io.BufferedReader;
@@ -51,17 +52,19 @@ public class Controller {
 				view.printMessage("Loading...");
 				try {
 					Gson gson = new Gson();
-					String json = "./data/comparendos_dei_2018_BIG.geojson";
+					String json = "./data/Comparendos_DEI_2018_small.geojson";
 					BufferedReader br;
 					br = new BufferedReader(new FileReader(json));
 					Comparendos comparendos = gson.fromJson(br, Comparendos.class);
 					//revisar
-					view.printMessage("Ingrese tamaño de tabla de simbolos tipo \'Linear Probing\'");
+					/*view.printMessage("Ingrese tamaño de tabla de simbolos tipo \'Linear Probing\'");
 					int lp = lector.nextInt();
 					view.printMessage("Ingrese tamaño de tabla de simbolos tipo \'Separate Chaining\'");
-					int sc = lector.nextInt();
-					Modelo mdl = new Modelo(comparendos.darListaFeatures(),lp,sc,primos);
+					int sc = lector.nextInt();*/
+					Modelo mdl = new Modelo(comparendos.darListaFeatures());
 					modelo = mdl;
+					view.printMessage("Valor maximo de OBJECT-ID: \n\t"+modelo.getMayorOBJ());
+					view.printMessage("Valor minimo de OBJECT-ID: \n\t"+modelo.getMinOBJ());
 					br.close();
 				} catch (FileNotFoundException e) {
 					// TODO Auto-generated catch block
@@ -70,6 +73,23 @@ public class Controller {
 			    view.printMessage("Datos Cargados.");
 				break;
 				case 2:
+					view.printMessage("Ingrese el ObjectID del comparendo que desea buscar :");
+					Integer obj = lector.nextInt();
+					Features rta = modelo.Req1(obj);
+					view.printMessage(rta.toString());
+				break;
+				case 3:
+					view.printMessage("Ingrese el ObjectID minimo :");
+					Integer objMin = lector.nextInt();
+					view.printMessage("Ingrese el ObjectID maximo :");
+					Integer objMax = lector.nextInt();
+					ArregloDinamico<Integer> rta_= modelo.Req2(objMin,objMax);
+					view.printMessage("Comparendos en rango :");
+					for (int i=0; i< rta_.darTamano();i++){
+						view.printMessage(rta_.darElemento(i).toString());
+					}
+					break;
+				/*case 2:
 					view.printMessage("Ingrese la fecha de los comparendos a buscar: \nFormato YYYY/MM/DD");
 					String date = lector.next();
 					view.printMessage("Ingrese el tipo de vehiculo (en mayusculas) a buscar: ");
@@ -112,7 +132,7 @@ public class Controller {
 					view.printMessage("||Tiempo minimo de \'get()\'  || "+rta4[1]+"s || "+rta4[4]+"s ||");
 					view.printMessage("||Tiempo maximo de \'get()\'  || "+rta4[0]+"s || "+rta4[3]+"s ||");
 					view.printMessage("||Tiempo promedio de \'get()\'|| "+rta4[2]+"s || "+rta4[5]+"s ||");
-					break;
+					break;*/
 			}
 		}
 		

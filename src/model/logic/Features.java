@@ -120,10 +120,9 @@ public class Features implements Comparable<Features>{
         }
         public int compareOb(Features that){
             if (this.properties.getOBJECTID() > that.properties.getOBJECTID()) return 1;
-            if (this.properties.getOBJECTID().equals(that.properties.getOBJECTID())) return 0;
             if (this.properties.getOBJECTID() < that.properties.getOBJECTID()) return -1;
-            return -2;
-        }
+            else return 0;
+            }
         public int compareDates(Features that){
             String[] actual = this.properties.getFECHA_HORA().split("/");
             int mes = Integer.parseInt(actual[1]);
@@ -140,14 +139,14 @@ public class Features implements Comparable<Features>{
             return -2;
         }
         public int compareClaseV(Features that){
-                int comp = this.getProperties().getCLASE_VEHI().compareTo(that.getProperties().getCLASE_VEHI());
+                int comp = this.getProperties().getCLASE_VEHICULO().compareTo(that.getProperties().getCLASE_VEHICULO());
                 if (comp > 0) return 1;
                 if (comp < 0) return -1;
                 else return 0;
         }
         public int compareKey(Features that){
-           String thisKey = this.getProperties().getFECHA_HORA() + this.getProperties().getCLASE_VEHI() + this.getProperties().getINFRACCION();
-           String thatKey = that.getProperties().getFECHA_HORA() + that.getProperties().getCLASE_VEHI() + that.getProperties().getINFRACCION();
+           String thisKey = this.getProperties().getFECHA_HORA() + this.getProperties().getCLASE_VEHICULO() + this.getProperties().getINFRACCION();
+           String thatKey = that.getProperties().getFECHA_HORA() + that.getProperties().getCLASE_VEHICULO() + that.getProperties().getINFRACCION();
            int comp =  thisKey.compareToIgnoreCase(thatKey);
            if (comp > 0 ) return 1;
            if (comp < 0 ) return -1;

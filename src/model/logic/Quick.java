@@ -11,6 +11,8 @@ public class Quick {
             sortV((Features[]) list,0,list.length-1);
         else if (tipoSort.equalsIgnoreCase("infraccion"))
             sortP((Features[]) list,0,list.length-1);
+        else if (tipoSort.equalsIgnoreCase("OBJECTID"))
+            sortO((Features[])list,0,list.length-1);
         else if (tipoSort.equalsIgnoreCase("key"))
             sortG((Features[]) list,0,list.length-1);
     }
@@ -56,6 +58,27 @@ public class Quick {
     }
     private static boolean lessG(Features v, Features w)
     { return v.compareKey(w) < 0; }
+    private static void sortO(Features[] list, int lo, int hi){
+        if (hi <= lo) return;
+        int j = partitionO(list, lo, hi);
+        sortO(list, lo, j - 1);
+        sortO(list, j + 1, hi);
+    }
+    private static int partitionO(Features[] list, int lo, int hi) {
+        int i = lo;
+        int j = hi+1;
+        Features P = list[lo];
+        while (true) {
+            while (lessO(list[++i], P)) if (i == hi) break;
+            while (lessO(P, list[--j])) if (j == lo) break;
+            if (i >= j) break;
+            exch(list, i, j);
+        }
+        exch(list, lo, j);
+        return j;
+    }
+    private static boolean lessO(Features v, Features w)
+    { return v.compareOb(w) < 0; }
     private static void sortL(Features[] list, int lo, int hi){
         if (hi <= lo) return;
         int j = partitionL(list, lo, hi);

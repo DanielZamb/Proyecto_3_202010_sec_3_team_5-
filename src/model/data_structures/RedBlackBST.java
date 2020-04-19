@@ -2,11 +2,13 @@ package model.data_structures;
 
 import java.util.Iterator;
 
-public class RedBlackBST<Key extends Comparable<Key>, Value> implements Iterable<Key>{
+public class RedBlackBST<Key extends Comparable<Key>, Value extends Comparable<Value>> implements Iterable<Key>{
     private static final boolean RED = true;
     private static final boolean BLACK = false;
     private NodeRB root;
-
+    public RedBlackBST(){
+        root = null;
+    }
     class NodeRB {
         Key key;
         Value value;
@@ -22,7 +24,6 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> implements Iterable
             this.color = color;
         }
     }
-
     private boolean isRed(NodeRB x) {
         if (x == null) return false;
         return x.color == RED;
@@ -43,8 +44,9 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> implements Iterable
         x.right = h.left;
         h.left = x;
         h.color = x.color;
+        x.color = RED;
         h.N = x.N;
-        x.N = size(x);
+        x.N = size(x.left) + 1 + size(x.right);
         return h;
     }
 
@@ -53,8 +55,9 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> implements Iterable
         x.left = h.right;
         h.right = x;
         h.color = x.color;
+        x.color = RED;
         h.N = x.N;
-        x.N = size(x);
+        x.N = size(x.left) + 1 + size(x.right);
         return h;
     }
 
@@ -84,7 +87,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> implements Iterable
         if (isRed(x.right) && isRed(x.left))
             flipColors(x);// check if a 4-node caused by the prior statement is ready to split into a 2-node, if so, split.
         //update size of the root argument.
-        x.N = size(x);
+        x.N = size(x.left) + 1 + size(x.right) ;
         //returns 4-node (ready to split) || 4-node(2 left-leaning links in a row)|| 3-node || 3-node(rigth-leaning link) if x null || 2-node;
         return x;
     }
@@ -106,14 +109,13 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> implements Iterable
         }
     }
 
-    private int size() {
+    public int size() {
         return size(root);
     }
 
     private int size(NodeRB x) {
         if (x == null) return 0;
-        else
-            return size(x.left) + 1 + size(x.right);
+        else return x.N; // 1
     }
 
     public boolean isEmpty() {
@@ -149,7 +151,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> implements Iterable
         else
             return 1 + Math.max(height(x.left), height(x.right));
     }
-    private int blackHeigth(){
+    private int blackHeight(){
         return blackHeight(root);
     }
     private int blackHeight(NodeRB x){
@@ -270,31 +272,28 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> implements Iterable
             return;
         }
     }
-    private void nodesQueueRK(NodeRB x,Queue<Key> queue,Key min,Key max){
+    private void nodesQueueRK(NodeRB x,Queue<Key> queue,Key min,Key max){// PRUNING THE TREE IS EFFECTIVE FOR PARTIAL SEARCH!
         if (x == null) return;
-        else if (x.key.equals(min) || x.key.equals(max)){
-            queue.enqueue(x.key);
-            return;
-        }
-        else {
+        int cl = min.compareTo(x.key);
+        int ch = max.compareTo(x.key);
+        if (cl < 0)
             nodesQueueRK(x.left,queue,min,max);
+        if (cl<=0 && ch >= 0) //range [min,max] if its min, enqueue, if its max, enqueue, if its in between enqueue, otherwise prune.
             queue.enqueue(x.key);
+        if (ch > 0)
             nodesQueueRK(x.right,queue,min,max);
-            return;
-        }
+
     }
     private void nodesQueueRV(NodeRB x,Queue<Value> queue,Value min,Value max){
         if (x == null) return;
-        else if (x.value.equals(min) || x.value.equals(max)){
-            queue.enqueue(x.value);
-            return;
-        }
-        else {
+        int cl = min.compareTo(x.value);
+        int ch = max.compareTo(x.value);
+        if (cl < 0)
             nodesQueueRV(x.left,queue,min,max);
-            queue.enqueue(x.value);
+        else if (cl<=0 && ch >= 0) //range [min,max] if its min, enqueue, if its max, enqueue, if its in between enqueue, otherwise prune.
+            queue.enqueue(x.key);
+        else if (ch > 0)
             nodesQueueRV(x.right,queue,min,max);
-            return;
-        }
     }
     private class RedBlackIterator<Key extends Comparable<Key>> implements Iterator<Key>{
         Queue<Key> queue = new Queue<>();
@@ -314,7 +313,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> implements Iterable
             throw new UnsupportedOperationException();
         }
     }
-    private class RedBlackIteratorInRange<Key extends Comparable<Key>> implements Iterator<Key>{
+     private class RedBlackIteratorInRange<Key extends Comparable<Key>> implements Iterator<Key>{
         Queue<Key> queue = new Queue<>();
         Nodo<Key> actual;
         public RedBlackIteratorInRange(RedBlackBST<Key,Value> rbt,Key min, Key max) {
@@ -322,7 +321,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> implements Iterable
             actual = queue.peekNode();
         }
         public boolean hasNext(){
-            return (actual.getSiguiente() != null);
+            return (actual != null);
         }
         public Key next(){
             actual = actual.getSiguiente();
@@ -332,7 +331,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> implements Iterable
             throw new UnsupportedOperationException();
         }
     }
-    private class RedBlackIteratorInRValue<Value> implements Iterator<Value>{
+    private class RedBlackIteratorInRValue<Value extends Comparable<Value>> implements Iterator<Value>{
         Queue<Value> queue = new Queue<>();
         Nodo<Value> actual;
         public RedBlackIteratorInRValue(RedBlackBST<Key,Value> rbt,Value min, Value max) {
@@ -340,7 +339,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> implements Iterable
             actual = queue.peekNode();
         }
         public boolean hasNext(){
-            return (actual.getSiguiente() != null);
+            return (actual != null);
         }
         public Value next(){
             actual = actual.getSiguiente();
@@ -350,7 +349,6 @@ public class RedBlackBST<Key extends Comparable<Key>, Value> implements Iterable
             throw new UnsupportedOperationException();
         }
     }
-    //implementar keys, keys in range, values in range
 }
 
 

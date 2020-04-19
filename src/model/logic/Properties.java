@@ -6,17 +6,19 @@ public class Properties {
 
     private String FECHA_HORA;
 
-    private String MEDIO_DETE;
+    private String MEDIO_DETECCION;
 
-    private String CLASE_VEHI;
+    private String CLASE_VEHICULO;
 
-    private String TIPO_SERVI;
+    private String TIPO_SERVICIO;
 
     private String INFRACCION;
 
-    private String DES_INFRAC;
+    private String DES_INFRACCION;
 
     private String LOCALIDAD;
+
+    private String MUNICIPIO;
 
     public Integer getOBJECTID() {
         return OBJECTID;
@@ -34,28 +36,28 @@ public class Properties {
         this.FECHA_HORA = fECHAHORA;
     }
 
-    public String getMEDIO_DETE() {
-        return MEDIO_DETE;
+    public String getMEDIO_DETECCION() {
+        return MEDIO_DETECCION;
     }
 
-    public void setMEDIO_DETE(String mEDIODETE) {
-        this.MEDIO_DETE = mEDIODETE;
+    public void setMEDIO_DETECCION(String mEDIODETE) {
+        this.MEDIO_DETECCION = mEDIODETE;
     }
 
-    public String getCLASE_VEHI() {
-        return CLASE_VEHI;
+    public String getCLASE_VEHICULO() {
+        return CLASE_VEHICULO;
     }
 
-    public void setCLASE_VEHI(String cLASEVEHI) {
-        this.CLASE_VEHI = cLASEVEHI;
+    public void setCLASE_VEHICULO(String cLASEVEHI) {
+        this.CLASE_VEHICULO = cLASEVEHI;
     }
 
-    public String getTIPO_SERVI() {
-        return TIPO_SERVI;
+    public String getTIPO_SERVICIO() {
+        return TIPO_SERVICIO;
     }
 
-    public void setTIPO_SERVI(String tIPOSERVI) {
-        this.TIPO_SERVI = tIPOSERVI;
+    public void setTIPO_SERVICIO(String tIPOSERVI) {
+        this.TIPO_SERVICIO = tIPOSERVI;
     }
 
     public String getINFRACCION() {
@@ -66,12 +68,12 @@ public class Properties {
         this.INFRACCION = iNFRACCION;
     }
 
-    public String getDES_INFRAC() {
-        return DES_INFRAC;
+    public String getDES_INFRACCION() {
+        return DES_INFRACCION;
     }
 
-    public void setDES_INFRAC(String dESINFRAC) {
-        this.DES_INFRAC = dESINFRAC;
+    public void setDES_INFRACCION(String dESINFRAC) {
+        this.DES_INFRACCION = dESINFRAC;
     }
 
     public String getLOCALIDAD() {
@@ -81,16 +83,23 @@ public class Properties {
     public void setLOCALIDAD(String lOCALIDAD) {
         this.LOCALIDAD = lOCALIDAD;
     }
+    public void setMUNICIPIO(String mUNICIPIO){
+        this.MUNICIPIO = mUNICIPIO;
+    }
+    public String getMUNICIPIO(){
+        return MUNICIPIO;
+    }
 
     public String toString(){
         String str ="OBJECTID : "+ this.OBJECTID +",\n"+
                 "FECHA_HORA : "+ this.FECHA_HORA +",\n"+
-                "MEDIO_DETE : "+ this.MEDIO_DETE +",\n"+
-                "CLASE_VEHI : "+ this.CLASE_VEHI +",\n"+
-                "TIPO_SERV : "+ this.TIPO_SERVI +",\n"+
+                "MEDIO_DETE : "+ this.MEDIO_DETECCION +",\n"+
+                "CLASE_VEHI : "+ this.CLASE_VEHICULO +",\n"+
+                "TIPO_SERV : "+ this.TIPO_SERVICIO +",\n"+
                 "INFRACCION : "+ this.INFRACCION +",\n"+
-                "DESC_INFRAC : "+ this.DES_INFRAC +",\n"+
-                "LOCALIDAD : "+ this.LOCALIDAD +"\n";
+                "DESC_INFRAC : "+ this.DES_INFRACCION +",\n"+
+                "LOCALIDAD : "+ this.LOCALIDAD +",\n"+
+                "MUNICIPIO : "+ this.MUNICIPIO +"\n";
         return str;
     }
 }

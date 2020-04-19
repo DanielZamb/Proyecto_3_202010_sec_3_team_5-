@@ -4,7 +4,7 @@ import model.data_structures.ArregloDinamico;
 
 public class Make {
     static String key(Features that){
-        String key = "("+that.getProperties().getFECHA_HORA()+","+that.getProperties().getCLASE_VEHI()+","+that.getProperties().getINFRACCION()+")";
+        String key = "("+that.getProperties().getFECHA_HORA()+","+that.getProperties().getCLASE_VEHICULO()+","+that.getProperties().getINFRACCION()+")";
         return key;
     }
     static ArregloDinamico<Features> value(){
