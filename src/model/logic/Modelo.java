@@ -22,7 +22,6 @@ public class Modelo{
     private SeparateChainingHashST<String,Features[]> sc;
     private MaxPQ<Features> pq1;
     private MaxPQ<Features> pq2;
-    private Features[] comparableF;
     private int tamanio;
     private String mayorObj;
     private String minObj;
@@ -40,15 +39,15 @@ public class Modelo{
     public void cargarComparendos(List<Features> listaFeatures,int lp, int sc,int pq,Primos primos) {
         try {
             long startTime = System.nanoTime();
-            comparableF = new Features[listaFeatures.size()];
+            Features[] comparableF = new Features[listaFeatures.size()];
             for (int i = 0; i<listaFeatures.size();i++){
                 comparableF[i] = listaFeatures.get(i);
              }// revisar tipo de sort
             PQS(comparableF,pq);
             RBTS(comparableF);
+            HASH(comparableF,primos,lp,sc);
             getMayorOBJ();
             getMinOBJ();
-            HASH(comparableF,primos,lp,sc);
             long endTime = System.nanoTime();
             long elapsedTime = endTime - startTime;
             double convertET = (double) elapsedTime / 1000000000;
@@ -84,7 +83,7 @@ public class Modelo{
                 }
             }
         });
-        KeysMaxPq1(comparableF);
+        KeysMaxPq1(list);
         this.pq2 = new MaxPQ<>(pq, new Comparator<Features>(){
             @Override
             public int compare(Features f1, Features f2) {
@@ -123,7 +122,7 @@ public class Modelo{
                 }
             }
         });
-        KeysMaxPq2(comparableF);
+        KeysMaxPq2(list);
     }
     public void RBTS(Features[] list){
         this.rbt1 = new RedBlackBST<>(new Comparator() {
@@ -173,7 +172,7 @@ public class Modelo{
                 }
             }
         });
-        KeysRedBlack1(comparableF);
+        KeysRedBlack1(list);
         this.rbt2 = new RedBlackBST<>(new Comparator() {
             @Override
             public int compare(Object o1, Object o2) {
@@ -196,7 +195,7 @@ public class Modelo{
                 else return v;
             }
         });
-        KeysRedBlack2(comparableF);
+        KeysRedBlack2(list);
         this.rbt3 = new RedBlackBST<>(new Comparator() {
             @Override
             public int compare(Object o1, Object o2) {
@@ -223,9 +222,9 @@ public class Modelo{
 
             }
         });
-        KeysRedBlack3(comparableF);
+        KeysRedBlack3(list);
     }
-    public void HASH(Features[] lsit,Primos primos,int lp,int sc){
+    public void HASH(Features[] list,Primos primos,int lp,int sc){
         Comparator c1A = new Comparator() {
             @Override
             public int compare(Object o1, Object o2) {
@@ -252,9 +251,9 @@ public class Modelo{
                 return d1.compareTo(d2);
             }
         };
-        Quick.sort(comparableF,c1A);
+        Quick.sort(list,c1A);
         this.lp = new LinearProbingHashST<>(lp,primos);
-        KeysLp(comparableF,c1A);
+        KeysLp(list,c1A);
         Comparator c1B = new Comparator() {
             @Override
             public int compare(Object o1, Object o2) {
@@ -266,9 +265,9 @@ public class Modelo{
                 return k1.compareTo(k2);
             }
         };
-        Quick.sort(comparableF,c1B);
+        Quick.sort(list,c1B);
         this.sc = new SeparateChainingHashST<>(sc,primos);
-        KeysSC(comparableF,c1B);
+        KeysSC(list,c1B);
     }
 
     public void KeysMaxPq1(Features[] list){
@@ -509,11 +508,11 @@ public class Modelo{
             keys.agregar(keyA);
             double c=200;
             Double p = valueA/c;
-            String valuesS = "";
+            StringBuilder valuesS = new StringBuilder();
             for(int l =0 ; l< p;l++ ){
-                valuesS = valuesS + '*';
+                valuesS.append('*');
             }
-            values.agregar(valuesS);
+            values.agregar(valuesS.toString());
         }
         /*if (times % D == 0){
             int min = i++;

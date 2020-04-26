@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.Scanner;
 import com.google.gson.*;
 
-import sun.awt.SunHints;
 import view.View;
 
 public class Controller {
