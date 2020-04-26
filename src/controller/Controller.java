@@ -53,7 +53,7 @@ public class Controller {
 				view.printMessage("Loading...");
 				try {
 					Gson gson = new Gson();
-					String json = "./data/Comparendos_DEI_2018_BIG.geojson";
+					String json = "./data/Comparendos_DEI_2018_small.geojson";
 					BufferedReader br;
 					br = new BufferedReader(new FileReader(json));
 					Comparendos comparendos = gson.fromJson(br, Comparendos.class);
@@ -107,11 +107,47 @@ public class Controller {
 					view.printMessage("Digite la localidad en la cual realizar la busqueda:");
 					String local = lector.next();
 					ArregloDinamico<Features> rta3A = modelo.Req3A(sDate,eDate,local);
-					for(int i =0;i<CONS && i<rta3A.darTamano();i++){
+					for(int i =0;i<CONS && i<rta3A.darTamano();i++){ //LOCALIDADES CON ESPACIO, SE PUTEA
 						view.printMessage(rta3A.darElemento(i).toString());
 					}
 					break;
-
+				case 5:
+					view.printMessage("Digite el numero de comparendos a buscar por prioridad:");
+					int M1B = lector.nextInt();
+					view.printMessage("Loading...");
+					Features[] rta1B = modelo.Req1B(M1B);
+					for(int i =0;i<CONS && i<rta1B.length;i++){
+						view.printMessage(rta1B[i].toString());
+					}
+					break;
+				case 6:
+					view.printMessage("Digite el medio de deteccion a buscar:");
+					String meDet = lector.next();
+					view.printMessage("Digite la clase de vehiculo a buscar:");
+					String veh = lector.next();
+					view.printMessage("Digite el tipo de servicio a buscar:");
+					String serv = lector.next();
+					view.printMessage("Digite la localidad a buscar:");
+					String local_ = lector.next();
+					Features[] rta2B = modelo.Req2B(meDet,veh,serv,local_);
+					for(int i =0;i<rta2B.length && i<CONS;i++){ //LOCALIDADES CON ESPACIO, SE PUTEA
+						if (rta2B[i] != null){
+							view.printMessage(rta2B[i].toString());
+						}
+					}
+					break;
+				case 7:
+					view.printMessage("Digite la latitud de inicio para el rango de la busqueda:");
+					String sLat = lector.next();
+					view.printMessage("Digite la latitud final para el rango de la busqueda:");
+					String eLat = lector.next();
+					view.printMessage("Digite el tipo de vehiculo para el cual realizar la busqueda:");
+					String veh_ = lector.next();
+					ArregloDinamico<Features> rta3B = modelo.Req3B(sLat,eLat,veh_);
+					for(int i =0;i<CONS && i<rta3B.darTamano();i++){
+						view.printMessage(rta3B.darElemento(i).toString());
+					}
+					break;
 			}
 		}
 		

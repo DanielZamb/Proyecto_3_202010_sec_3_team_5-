@@ -15,7 +15,8 @@ public class Modelo{
     /**
      * Atributos del modelo del mundo
      */
-    private RedBlackBST<String,Features> rbt;
+    private RedBlackBST<String,Features> rbt1;
+    private RedBlackBST<String,Features> rbt2;
     private LinearProbingHashST<String,Features[]> lp;
     private SeparateChainingHashST<String,Features[]> sc;
     private MaxPQ<Features> pq1;
@@ -104,7 +105,7 @@ public class Modelo{
                 }
             });
             KeysMaxPq2(comparableF);
-            this.rbt = new RedBlackBST<>(new Comparator() {
+            this.rbt1 = new RedBlackBST<>(new Comparator() {
                 @Override
                 public int compare(Object o1, Object o2) {
                     String f1 = (String) o1;
@@ -151,9 +152,32 @@ public class Modelo{
                     }
                 }
             });
-            KeysRedBlack(comparableF);
+            KeysRedBlack1(comparableF);
             getMayorOBJ();
             getMinOBJ();
+            this.rbt2 = new RedBlackBST<>(new Comparator() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    String f1 = (String) o1;
+                    String f2 = (String) o2;
+                    String mods = f1.replace('(','\0' );
+                    mods = mods.replace(')','\0');
+                    String[] temp = mods.split(",");
+                    String vehiculo = temp[0];
+                    String latitud = temp[1];
+                    String modsC = f2.replace('(','\0' );
+                    modsC = modsC.replace(')','\0');
+                    String[] temp1 = modsC.split(",");
+                    String vehiculoC = temp1[0];
+                    String latitudC = temp1[1];
+                    int v = vehiculo.compareToIgnoreCase(vehiculoC);
+                    if(v==0){
+                        return latitud.compareToIgnoreCase(latitudC);
+                    }
+                    else return v;
+                }
+            });
+            KeysRedBlack2(comparableF);
             Comparator c1A = new Comparator() {
                 @Override
                 public int compare(Object o1, Object o2) {
@@ -189,8 +213,8 @@ public class Modelo{
                     Features f1 = (Features) o1;
                     Features f2 = (Features) o2;
                     Llave keyMaker = new Llave();
-                    String k1 = keyMaker.keyReq1BComp(f1);
-                    String k2 = keyMaker.keyReq1BComp(f2);
+                    String k1 = keyMaker.keyReq2BComp(f1);
+                    String k2 = keyMaker.keyReq2BComp(f2);
                     return k1.compareTo(k2);
                 }
             };
@@ -200,7 +224,7 @@ public class Modelo{
             long endTime = System.nanoTime();
             long elapsedTime = endTime - startTime;
             double convertET = (double) elapsedTime / 1000000000;
-            System.out.println("Red-Black Binary Search Tree size: \n\t N:" + this.rbt.size());
+            System.out.println("Red-Black Binary Search Tree size: \n\t N:" + this.rbt1.size());
             System.out.println("Linear Probing hash table size: \n\tM: " + this.lp.sizeM() + "\n\tN: "+this.lp.sizeN());
             System.out.println("Separate chaining hash table size: \n\tM: " + this.sc.sizeM() + "\n\tN: "+this.sc.sizeN());
             System.out.println(
@@ -220,14 +244,22 @@ public class Modelo{
             pq2.put(list[i]);
         }
     }
-    public void KeysRedBlack(Features[] list){
-            Llave dataPair = new Llave();
+    public void KeysRedBlack1(Features[] list){
+            Llave keyMaker = new Llave();
             for (int i =0 ; i< list.length;i++){
-                String key = dataPair.keyReq1A(list[i]);
+                String key = keyMaker.keyReq3A(list[i]);
                 Features value = list[i];
-                rbt.put(key,value);
+                rbt1.put(key,value);
             }
 
+    }
+    public void KeysRedBlack2(Features[] list){
+        Llave keyMaker = new Llave();
+        for(int i=0; i< list.length;i++){
+            String key = keyMaker.keyReq3B(list[i]);
+            Features value = list[i];
+            rbt2.put(key,value);
+        }
     }
     public void KeysLp(Features[] list,Comparator c){
         Llave dataPair = new Llave();
@@ -276,7 +308,7 @@ public class Modelo{
             int comp = 0;
             if (!(j == list.length-1)) comp = c.compare(list[j],list[j+1]);
             if (comp != 0) {
-                String key = dataPair.keyReq2A(list[j]);
+                String key = dataPair.keyReq2B(list[j]);
                 ArregloDinamico<Features> valuesTemp =  dataPair.getArr();
                 for (;l<=j;l++)
                     valuesTemp.agregar(list[l]);
@@ -291,7 +323,7 @@ public class Modelo{
                 dataPair.getArr().clear();
             }
             if (j == list.length-1){
-                String key = dataPair.keyReq2A(list[j]);
+                String key = dataPair.keyReq2B(list[j]);
                 ArregloDinamico<Features> valuesTemp =  dataPair.getArr();
                 for (;l<=j;l++)
                     valuesTemp.agregar(list[l]);
@@ -442,30 +474,45 @@ public class Modelo{
         Features[][] values = new Features[][]{values1,values2,values3,values4};
         return values;
     }
-    public Features[] Req1B(int M){
-        Features[] values = new Features[M];
-        for(int i=0;i<M; i++)
-            values[i] = pq1.delMax();
-        return values;
-    }
     public ArregloDinamico<Features> Req3A(String sDate,String eDate,String local){
         ArregloDinamico<Features> values = new ArregloDinamico<>(20);
         local = local.toUpperCase();
         String minKey = "("+local+","+sDate+")";
         String maxKey = "("+local+","+eDate+")";
-        Iterator iter = this.rbt.iteratorInRValue(minKey,maxKey);
+        Iterator iter = this.rbt1.iteratorInRValue(minKey,maxKey);
         while(iter.hasNext()){
             values.agregar((Features)iter.next());
         }
         return values;
     }
+    public Features[] Req1B(int M){
+        Features[] values = new Features[M];
+        for(int i=0;i<M; i++)
+            values[i] = pq2.delMax();
+        return values;
+    }
+    public Features[] Req2B(String medDet,String veh,String serv,String local){
+        String key = "("+medDet+","+veh+","+serv+","+local+")";
+        Features[] values = sc.get(key);
+        return values;
+    }
+    public ArregloDinamico<Features> Req3B(String sLat,String eLat,String veh){
+        ArregloDinamico<Features> values = new ArregloDinamico<>(20);
+        String minKey = "("+veh+","+sLat+")";
+        String maxKey = "("+veh+","+eLat+")";
+        Iterator  iter = this.rbt2.iteratorInRValue(minKey,maxKey);
+        while(iter.hasNext())
+            values.agregar((Features)iter.next());
+        return values;
+    }
+
 
     public String getMayorOBJ() {
-        mayorObj = this.rbt.max();
+        mayorObj = this.rbt1.max();
         return mayorObj;
     }
     public String getMinOBJ(){
-        minObj = this.rbt.min();
+        minObj = this.rbt1.min();
         return minObj;
     }
     public Double[] getMinMax() {
