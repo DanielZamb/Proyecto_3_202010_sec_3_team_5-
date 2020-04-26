@@ -34,6 +34,7 @@ public class Controller {
 		String dato = "";
 		String respuesta = "";
 		Primos primos = new Primos();
+		final int CONS = 20;
 		while( !fin ){
 			view.printMenu();
 			int option = lector.nextInt();
@@ -52,16 +53,18 @@ public class Controller {
 				view.printMessage("Loading...");
 				try {
 					Gson gson = new Gson();
-					String json = "./data/Comparendos_DEI_2018_small.geojson";
+					String json = "./data/Comparendos_DEI_2018_BIG.geojson";
 					BufferedReader br;
 					br = new BufferedReader(new FileReader(json));
 					Comparendos comparendos = gson.fromJson(br, Comparendos.class);
 					//revisar
-					/*view.printMessage("Ingrese tamaño de tabla de simbolos tipo \'Linear Probing\'");
+					view.printMessage("Ingrese tamaño de tabla de simbolos tipo \'Linear Probing\'");
 					int lp = lector.nextInt();
 					view.printMessage("Ingrese tamaño de tabla de simbolos tipo \'Separate Chaining\'");
-					int sc = lector.nextInt();*/
-					Modelo mdl = new Modelo(comparendos.darListaFeatures());
+					int sc = lector.nextInt();
+					view.printMessage("Ingrese tamaño de la cola de prioridad: ");
+					int pq  = lector.nextInt();
+					Modelo mdl = new Modelo(comparendos.darListaFeatures(),lp,sc,pq,primos);
 					modelo = mdl;
 					view.printMessage("Valor maximo de OBJECT-ID: \n\t"+modelo.getMayorOBJ());
 					view.printMessage("Valor minimo de OBJECT-ID: \n\t"+modelo.getMinOBJ());
@@ -73,66 +76,42 @@ public class Controller {
 			    view.printMessage("Datos Cargados.");
 				break;
 				case 2:
-					view.printMessage("Ingrese el ObjectID del comparendo que desea buscar :");
-					Integer obj = lector.nextInt();
-					Features rta = modelo.Req1(obj);
-					view.printMessage(rta.toString());
-				break;
-				case 3:
-					view.printMessage("Ingrese el ObjectID minimo :");
-					Integer objMin = lector.nextInt();
-					view.printMessage("Ingrese el ObjectID maximo :");
-					Integer objMax = lector.nextInt();
-					ArregloDinamico<Integer> rta_= modelo.Req2(objMin,objMax);
-					view.printMessage("Comparendos en rango :");
-					for (int i=0; i< rta_.darTamano();i++){
-						view.printMessage(rta_.darElemento(i).toString());
+					view.printMessage("Digite el numero de comparendos a buscar por prioridad:");
+					int M = lector.nextInt();
+					view.printMessage("Loading...");
+					Features[] rta1A = modelo.Req1A(M);
+					for(int i =0;i<CONS && i<rta1A.length;i++){
+						view.printMessage(rta1A[i].toString());
 					}
 					break;
-				/*case 2:
-					view.printMessage("Ingrese la fecha de los comparendos a buscar: \nFormato YYYY/MM/DD");
-					String date = lector.next();
-					view.printMessage("Ingrese el tipo de vehiculo (en mayusculas) a buscar: ");
-					String type = lector.next();
-					view.printMessage("Ingrese la infraccion a buscar: ");
-					String infrac = lector.next();
-					Llave key = new Llave();
-					String keyS = key.keyA(date,type,infrac);
-					Features[] rta = modelo.Requerimiento1(keyS);
-					if (rta != null){
-						for(int i=0;i<rta.length;i++){
-						view.printMessage(rta[i].toString());
-						}
-					}
-					else
-						view.printMessage("no se encontraron comparendos con tal llave");
-					break;
 				case 3:
-					view.printMessage("Ingrese la fecha de los comparendos a buscar: \nFormato YYYY/MM/DD");
-					String date_ = lector.next();
-					view.printMessage("Ingrese el tipo de vehiculo (en mayusculas) a buscar: ");
-					String type_ = lector.next();
-					view.printMessage("Ingrese la infraccion a buscar: ");
-					String infrac_ = lector.next();
-					Llave key_ = new Llave();
-					String keyS_ = key_.keyA(date_,type_,infrac_);
-					Features[] rta_ = modelo.Requerimiento2(keyS_);
-					if (rta_ != null){
-						for(int i=0;i<rta_.length;i++){
-							view.printMessage(rta_[i].toString());
+					view.printMessage("Digite el numero del mes a buscar:");
+					int Month = lector.nextInt();
+					view.printMessage("Escriba la inicial del dia a buscar:");
+					String day = lector.next();
+					Features[][] rta2A = modelo.Req2A(Month,day);
+					for(int i =0;i<rta2A.length;i++){
+						if (rta2A[i] != null){
+						for (int j=0;j<5 && j<rta2A[i].length ;j++){
+								view.printMessage(rta2A[i][j].toString());
+							}
 						}
 					}
-					else
-						view.printMessage("no se encontraron comparendos con tal llave");
 					break;
 				case 4:
-					view.printMessage("loading...");
-					double[] rta4 = modelo.Rendimiento();
-					view.printMessage("||\t\t\t\t\t\t\t|| Linear Probing || Separate chaining ||");
-					view.printMessage("||Tiempo minimo de \'get()\'  || "+rta4[1]+"s || "+rta4[4]+"s ||");
-					view.printMessage("||Tiempo maximo de \'get()\'  || "+rta4[0]+"s || "+rta4[3]+"s ||");
-					view.printMessage("||Tiempo promedio de \'get()\'|| "+rta4[2]+"s || "+rta4[5]+"s ||");
-					break;*/
+					view.printMessage("Digite las fechas en el formato YYYY-MM-DD-HH:MM:ss");
+					view.printMessage("Digite la fecha de inicio para el rango de la busqueda:");
+					String sDate = lector.next();
+					view.printMessage("Digite la fecha final para el rango de la busqueda:");
+					String eDate = lector.next();
+					view.printMessage("Digite la localidad en la cual realizar la busqueda:");
+					String local = lector.next();
+					ArregloDinamico<Features> rta3A = modelo.Req3A(sDate,eDate,local);
+					for(int i =0;i<CONS && i<rta3A.darTamano();i++){
+						view.printMessage(rta3A.darElemento(i).toString());
+					}
+					break;
+
 			}
 		}
 		

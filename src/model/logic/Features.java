@@ -1,5 +1,7 @@
 package model.logic;
 
+import java.util.Calendar;
+
 public class Features implements Comparable<Features>{
     private String type;
     private Properties properties;
@@ -143,13 +145,5 @@ public class Features implements Comparable<Features>{
                 if (comp > 0) return 1;
                 if (comp < 0) return -1;
                 else return 0;
-        }
-        public int compareKey(Features that){
-           String thisKey = this.getProperties().getFECHA_HORA() + this.getProperties().getCLASE_VEHICULO() + this.getProperties().getINFRACCION();
-           String thatKey = that.getProperties().getFECHA_HORA() + that.getProperties().getCLASE_VEHICULO() + that.getProperties().getINFRACCION();
-           int comp =  thisKey.compareToIgnoreCase(thatKey);
-           if (comp > 0 ) return 1;
-           if (comp < 0 ) return -1;
-           else return 0;
         }
 }

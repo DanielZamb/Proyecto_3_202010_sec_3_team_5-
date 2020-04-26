@@ -1,13 +1,16 @@
 package model.data_structures;
 
+import java.util.Comparator;
 import java.util.Iterator;
 
-public class RedBlackBST<Key extends Comparable<Key>, Value extends Comparable<Value>> implements Iterable<Key>{
+public class RedBlackBST<Key extends Comparable<Key>, Value > implements Iterable<Key>{
     private static final boolean RED = true;
     private static final boolean BLACK = false;
     private NodeRB root;
-    public RedBlackBST(){
+    private Comparator comparatorKeys;
+    public RedBlackBST(Comparator c){
         root = null;
+        comparatorKeys = c;
     }
     class NodeRB {
         Key key;
@@ -75,7 +78,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value extends Comparable<V
     private NodeRB put(NodeRB x, Key key, Value value) { // x is the root of the Red-Black subtree
         if (x == null) // search miss , the root of the subtree is null
             return new NodeRB(key, value, 1, RED); // add the node to the symbol table
-        int c = key.compareTo(x.key);
+        int c = comparatorKeys.compare(key,x.key);
         if (c < 0) x.left = put(x.left, key, value);
         else if (c > 0) x.right = put(x.right, key, value);
         else x.value = value;
@@ -99,7 +102,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value extends Comparable<V
     private Value get(NodeRB x, Key key) {
         if (x == null)
             return null;
-        int c = key.compareTo(x.key);
+        int c = comparatorKeys.compare(key,x.key);
         if (c < 0)
             return get(x.left, key);
         if (c > 0)
@@ -129,7 +132,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value extends Comparable<V
 
     private int getHeight(NodeRB x, Key key) {
         if (x == null) return -1;
-        int c = key.compareTo(x.key);
+        int c = comparatorKeys.compare(key,x.key);
         if (c > 0)
             return 1 + getHeight(x.right, key);
         if (c < 0)
@@ -205,8 +208,8 @@ public class RedBlackBST<Key extends Comparable<Key>, Value extends Comparable<V
             return checkOrder(x.left) && checkRRl(x.right); //NullPointer managed , i think.
         else if (is3Leaf(x))
             return checkOrder(x.left) && checkRRl(x.right);
-        int c1 = x.key.compareTo(x.left.key); // possible nullPointer if not managed
-        int c2 = x.key.compareTo(x.right.key); // same as prior.
+        int c1 = comparatorKeys.compare(x.key,x.left.key);// possible nullPointer if not managed
+        int c2 = comparatorKeys.compare(x.key,x.right.key); // same as prior.
         if (c1 > 0 && c2 < 0)
             return checkOrder(x.left) && checkOrder(x.right);
         else
@@ -256,7 +259,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value extends Comparable<V
     public Iterator<Key> iteratorInRange(Key min,Key max){
         return new RedBlackIteratorInRange<Key>(this,min,max);
     }
-    public Iterator<Value> iteratorInRValue(Value min, Value max){
+    public Iterator<Value> iteratorInRValue(Key min, Key max){
         return new RedBlackIteratorInRValue<Value>(this,min,max);
     }
     private void nodesQueue(NodeRB x,Queue<Key> queue){
@@ -274,8 +277,8 @@ public class RedBlackBST<Key extends Comparable<Key>, Value extends Comparable<V
     }
     private void nodesQueueRK(NodeRB x,Queue<Key> queue,Key min,Key max){// PRUNING THE TREE IS EFFECTIVE FOR PARTIAL SEARCH!
         if (x == null) return;
-        int cl = min.compareTo(x.key);
-        int ch = max.compareTo(x.key);
+        int cl = comparatorKeys.compare(min,x.key);
+        int ch = comparatorKeys.compare(max,x.key);
         if (cl < 0)
             nodesQueueRK(x.left,queue,min,max);
         if (cl<=0 && ch >= 0) //range [min,max] if its min, enqueue, if its max, enqueue, if its in between enqueue, otherwise prune.
@@ -284,15 +287,15 @@ public class RedBlackBST<Key extends Comparable<Key>, Value extends Comparable<V
             nodesQueueRK(x.right,queue,min,max);
 
     }
-    private void nodesQueueRV(NodeRB x,Queue<Value> queue,Value min,Value max){
+    private void nodesQueueRV(NodeRB x,Queue<Value> queue,Key min,Key max){
         if (x == null) return;
-        int cl = min.compareTo(x.value);
-        int ch = max.compareTo(x.value);
+        int cl = comparatorKeys.compare(min,x.key);
+        int ch = comparatorKeys.compare(max,x.key);
         if (cl < 0)
             nodesQueueRV(x.left,queue,min,max);
-        else if (cl<=0 && ch >= 0) //range [min,max] if its min, enqueue, if its max, enqueue, if its in between enqueue, otherwise prune.
-            queue.enqueue(x.key);
-        else if (ch > 0)
+        if (cl<=0 && ch >= 0) //range [min,max] if its min, enqueue, if its max, enqueue, if its in between enqueue, otherwise prune.
+            queue.enqueue(x.value);
+        if (ch > 0)
             nodesQueueRV(x.right,queue,min,max);
     }
     private class RedBlackIterator<Key extends Comparable<Key>> implements Iterator<Key>{
@@ -331,10 +334,10 @@ public class RedBlackBST<Key extends Comparable<Key>, Value extends Comparable<V
             throw new UnsupportedOperationException();
         }
     }
-    private class RedBlackIteratorInRValue<Value extends Comparable<Value>> implements Iterator<Value>{
+    private class RedBlackIteratorInRValue<Value> implements Iterator<Value>{
         Queue<Value> queue = new Queue<>();
         Nodo<Value> actual;
-        public RedBlackIteratorInRValue(RedBlackBST<Key,Value> rbt,Value min, Value max) {
+        public RedBlackIteratorInRValue(RedBlackBST<Key,Value> rbt,Key min, Key max) {
             rbt.nodesQueueRV(rbt.root,queue,min,max);
             actual = queue.peekNode();
         }

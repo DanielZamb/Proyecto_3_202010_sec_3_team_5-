@@ -7,11 +7,15 @@ public class Llave {
     public Llave (){
         values = new ArregloDinamico<>(20);
     }
-    public Integer keyRB(Features that){
-        return that.getProperties().getOBJECTID();
+    public String keyReq1A(Features that){
+        return "("+that.getProperties().getLOCALIDAD()+","+that.getProperties().getFECHA_HORA()+")";
     }
     public String keyHash(Features that){
       return "("+that.getProperties().getFECHA_HORA()+","+that.getProperties().getCLASE_VEHICULO()+","+that.getProperties().getINFRACCION()+")";
+    }
+    public String keyReq2A(Features that){
+        String[] fechaHora = that.getProperties().getFECHA_HORA().split("T");
+        return fechaHora[0];
     }
     public String keyA(String date,String type,String infrac){
         return "("+date+","+type+","+infrac+")";
