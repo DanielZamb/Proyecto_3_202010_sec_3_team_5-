@@ -26,6 +26,10 @@ public class Llave {
     public String keyReq3B(Features that){
         return "("+that.getProperties().getCLASE_VEHICULO()+","+that.getGeometry().DarCoordenadas().get(0)+")";
     }
+    public String keyReq1C(Features that){
+        String[] fechaHora_ = that.getProperties().getFECHA_HORA().split("T");
+        return fechaHora_[0];
+    }
     public String keyA(String date,String type,String infrac){
         return "("+date+","+type+","+infrac+")";
     }
