@@ -18,7 +18,8 @@ public class Modelo{
     private RedBlackBST<String,Features> rbt;
     private LinearProbingHashST<String,Features[]> lp;
     private SeparateChainingHashST<String,Features[]> sc;
-    private MaxPQ<Features> pq;
+    private MaxPQ<Features> pq1;
+    private MaxPQ<Features> pq2;
     private Features[] comparableF;
     private int tamanio;
     private String mayorObj;
@@ -41,7 +42,7 @@ public class Modelo{
             for (int i = 0; i<listaFeatures.size();i++){
                 comparableF[i] = listaFeatures.get(i);
              }// revisar tipo de sort
-            this.pq = new MaxPQ<>(pq, new Comparator<Features>(){
+            this.pq1 = new MaxPQ<>(pq, new Comparator<Features>(){
                 @Override
                 public int compare(Features f1, Features f2) {
                     int p1 = 0;
@@ -63,7 +64,46 @@ public class Modelo{
                     }
                 }
             });
-            KeysMaxPq(comparableF);
+            KeysMaxPq1(comparableF);
+            this.pq2 = new MaxPQ<>(pq, new Comparator<Features>(){
+                @Override
+                public int compare(Features f1, Features f2) {
+                    double latitud = 4.647586;
+                    double longitud = 74.078122;
+                    double latF1 = f1.getGeometry().DarCoordenadas().get(0);
+                    double latF2 = f2.getGeometry().DarCoordenadas().get(0);
+                    double longF1 = f1.getGeometry().DarCoordenadas().get(1);
+                    double longF2 = f2.getGeometry().DarCoordenadas().get(1);
+                    int p1 = 0;
+                    int p2 = 0;
+                    double d1 = AvDistance.distance(latitud,longitud,latF1,longF1);
+                    double d2 = AvDistance.distance(latitud,longitud,latF2,longF2);
+                    if (0 < d1 && d1 < 0.5)
+                        p1=5;
+                    else if (0.51<d1 && d1 < 1.0)
+                        p1=4;
+                    else if (1.1<d1 && d1<1.5)
+                        p1=3;
+                    else if (1.51<d1 && d1<2.0)
+                        p1=2;
+                    else p1=1;
+                    if (0 < d2 && d2 < 0.5)
+                        p2=5;
+                    else if (0.51<d2 && d2 < 1.0)
+                        p2=4;
+                    else if (1.1<d2 && d2<1.5)
+                        p2=3;
+                    else if (1.51<d2 && d2<2.0)
+                        p2=2;
+                    else p2=1;
+                    if (p1 > p2) return 1;
+                    else if (p1 < p2) return -1;
+                    else {
+                        return f1.getProperties().getINFRACCION().compareTo(f2.getProperties().getTIPO_SERVICIO());
+                    }
+                }
+            });
+            KeysMaxPq2(comparableF);
             this.rbt = new RedBlackBST<>(new Comparator() {
                 @Override
                 public int compare(Object o1, Object o2) {
@@ -114,7 +154,7 @@ public class Modelo{
             KeysRedBlack(comparableF);
             getMayorOBJ();
             getMinOBJ();
-            Comparator c = new Comparator() {
+            Comparator c1A = new Comparator() {
                 @Override
                 public int compare(Object o1, Object o2) {
                     Features f1 = (Features) o1;
@@ -140,10 +180,23 @@ public class Modelo{
                     return d1.compareTo(d2);
                 }
             };
-            Quick.sort(comparableF,c);
+            Quick.sort(comparableF,c1A);
             this.lp = new LinearProbingHashST<>(lp,primos);
+            KeysLp(comparableF,c1A);
+            Comparator c1B = new Comparator() {
+                @Override
+                public int compare(Object o1, Object o2) {
+                    Features f1 = (Features) o1;
+                    Features f2 = (Features) o2;
+                    Llave keyMaker = new Llave();
+                    String k1 = keyMaker.keyReq1BComp(f1);
+                    String k2 = keyMaker.keyReq1BComp(f2);
+                    return k1.compareTo(k2);
+                }
+            };
+            Quick.sort(comparableF,c1B);
             this.sc = new SeparateChainingHashST<>(sc,primos);
-            KeysLp(comparableF,c);
+            KeysSC(comparableF,c1B);
             long endTime = System.nanoTime();
             long elapsedTime = endTime - startTime;
             double convertET = (double) elapsedTime / 1000000000;
@@ -157,9 +210,14 @@ public class Modelo{
         }
     }
 
-    public void KeysMaxPq(Features[] list){
+    public void KeysMaxPq1(Features[] list){
         for(int i=0;i<list.length;i++){
-            pq.put(list[i]);
+            pq1.put(list[i]);
+        }
+    }
+    public void KeysMaxPq2(Features[] list){
+        for(int i=0;i<list.length;i++){
+            pq2.put(list[i]);
         }
     }
     public void KeysRedBlack(Features[] list){
@@ -211,6 +269,47 @@ public class Modelo{
         }
 
     }
+    public void KeysSC(Features[] list,Comparator c){
+        Llave dataPair = new Llave();
+        int l=0;
+        for(int j=0;j<list.length;j++){
+            int comp = 0;
+            if (!(j == list.length-1)) comp = c.compare(list[j],list[j+1]);
+            if (comp != 0) {
+                String key = dataPair.keyReq2A(list[j]);
+                ArregloDinamico<Features> valuesTemp =  dataPair.getArr();
+                for (;l<=j;l++)
+                    valuesTemp.agregar(list[l]);
+                Features[] values = dataPair.values();
+                Quick.sort(values, new Comparator<Features>() {
+                    @Override
+                    public int compare(Features o1, Features o2) {
+                        return o1.getProperties().getOBJECTID().compareTo(o2.getProperties().getOBJECTID());
+                    }
+                });
+                sc.put(key,values);
+                dataPair.getArr().clear();
+            }
+            if (j == list.length-1){
+                String key = dataPair.keyReq2A(list[j]);
+                ArregloDinamico<Features> valuesTemp =  dataPair.getArr();
+                for (;l<=j;l++)
+                    valuesTemp.agregar(list[l]);
+                Features[] values = dataPair.values();
+                Quick.sort(values, new Comparator<Features>() {
+                    @Override
+                    public int compare(Features o1, Features o2) {
+                        return o1.getProperties().getOBJECTID().compareTo(o2.getProperties().getOBJECTID());
+                    }
+                });
+                sc.put(key,values);
+                dataPair.getArr().clear();
+            }
+
+        }
+
+    }
+
     /*public Features[] Requerimiento1(String key) {
         Features[] values = lp.get(key);
         return values;
@@ -275,7 +374,7 @@ public class Modelo{
     public Features[] Req1A(int M){
         Features[] values = new Features[M];
         for(int i=0;i<M ; i++)
-            values[i] = pq.delMax();
+            values[i] = pq1.delMax();
         return values;
     }
     public Features[][] Req2A(int Month, String Day){
@@ -341,6 +440,12 @@ public class Modelo{
         Features[] values3 = lp.get(dateToSearch3);
         Features[] values4 = lp.get(dateToSearch4);
         Features[][] values = new Features[][]{values1,values2,values3,values4};
+        return values;
+    }
+    public Features[] Req1B(int M){
+        Features[] values = new Features[M];
+        for(int i=0;i<M; i++)
+            values[i] = pq1.delMax();
         return values;
     }
     public ArregloDinamico<Features> Req3A(String sDate,String eDate,String local){

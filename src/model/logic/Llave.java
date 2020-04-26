@@ -10,6 +10,12 @@ public class Llave {
     public String keyReq1A(Features that){
         return "("+that.getProperties().getLOCALIDAD()+","+that.getProperties().getFECHA_HORA()+")";
     }
+    public String keyReq1BComp(Features that){
+        return that.getProperties().getMEDIO_DETECCION() + that.getProperties().getCLASE_VEHICULO() + that.getProperties().getTIPO_SERVICIO() + that.getProperties().getLOCALIDAD();
+    }
+    public String keyReq1B(Features that){
+        return "("+that.getProperties().getMEDIO_DETECCION()+","+ that.getProperties().getCLASE_VEHICULO()+","+ that.getProperties().getTIPO_SERVICIO()+","+ that.getProperties().getLOCALIDAD()+")";
+    }
     public String keyHash(Features that){
       return "("+that.getProperties().getFECHA_HORA()+","+that.getProperties().getCLASE_VEHICULO()+","+that.getProperties().getINFRACCION()+")";
     }
