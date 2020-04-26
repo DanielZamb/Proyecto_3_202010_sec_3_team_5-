@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.Scanner;
 import com.google.gson.*;
 
+import sun.awt.SunHints;
 import view.View;
 
 public class Controller {
@@ -53,7 +54,7 @@ public class Controller {
 				view.printMessage("Loading...");
 				try {
 					Gson gson = new Gson();
-					String json = "./data/Comparendos_DEI_2018_small.geojson";
+					String json = "./data/Comparendos_DEI_2018_BIG.geojson";
 					BufferedReader br;
 					br = new BufferedReader(new FileReader(json));
 					Comparendos comparendos = gson.fromJson(br, Comparendos.class);
@@ -147,6 +148,22 @@ public class Controller {
 					for(int i =0;i<CONS && i<rta3B.darTamano();i++){
 						view.printMessage(rta3B.darElemento(i).toString());
 					}
+					break;
+				case 8:
+					view.printMessage("Digite el rango de dias para el cual buscar comparendos:");
+					int D = lector.nextInt();
+					Object[] rta1C = modelo.Req1C(D);
+					ArregloDinamico<Integer> values = (ArregloDinamico<Integer>) rta1C[0];
+					ArregloDinamico<String> keys = (ArregloDinamico<String>) rta1C[1];
+					String leftAlignFormat = "| %-24s | %-150s |%n";
+					System.out.format("+--------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+%n");
+					System.out.format("| Rango de Fechas          | Comparendos durante el anio  																		                                                    |%n");
+					System.out.format("+--------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+%n");
+					for (int i = 0;i< keys.darTamano() ; i++) {
+
+						System.out.format(leftAlignFormat,keys.darElemento(i),values.darElemento(i));
+					}
+					System.out.format("+--------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+%n");
 					break;
 			}
 		}

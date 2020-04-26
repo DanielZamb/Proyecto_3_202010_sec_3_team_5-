@@ -8,6 +8,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value > implements Iterabl
     private static final boolean BLACK = false;
     private NodeRB root;
     private Comparator comparatorKeys;
+    private int ValueSize;
     public RedBlackBST(Comparator c){
         root = null;
         comparatorKeys = c;
@@ -339,6 +340,7 @@ public class RedBlackBST<Key extends Comparable<Key>, Value > implements Iterabl
         Nodo<Value> actual;
         public RedBlackIteratorInRValue(RedBlackBST<Key,Value> rbt,Key min, Key max) {
             rbt.nodesQueueRV(rbt.root,queue,min,max);
+            ValueSize(queue);
             actual = queue.peekNode();
         }
         public boolean hasNext(){
@@ -351,6 +353,12 @@ public class RedBlackBST<Key extends Comparable<Key>, Value > implements Iterabl
         public void remove() {
             throw new UnsupportedOperationException();
         }
+    }
+    private void ValueSize(Queue queue){
+        ValueSize = queue.size();
+    }
+    public int ValueSize(){
+        return ValueSize;
     }
 }
 

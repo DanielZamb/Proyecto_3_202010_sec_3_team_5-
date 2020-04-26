@@ -489,28 +489,33 @@ public class Modelo{
         return values;
     }
     public Object[] Req1C(int D){
-        ArregloDinamico<Integer> values = new ArregloDinamico<>(20);
+        ArregloDinamico<String> values = new ArregloDinamico<>(20);
         ArregloDinamico<String> keys = new ArregloDinamico<>(20);
         Calendar date = Calendar.getInstance();
         date.set(2018,0,1);
         int times = 365/D;
-        int mayor = 0;
-        int i=1;
+        int i=0;
+        int j=1;
         String minKey = "";
         String maxKey = "";
-        for(;i<=times;i=i*D) {
+        for(;i<times;i++) {
             minKey = date.get(Calendar.YEAR) +"-"+ date.get(Calendar.MONTH) + "-"+date.get(Calendar.DATE);
-            date.add(Calendar.DATE, i);
+            date.add(Calendar.DATE, D);
             maxKey = date.get(Calendar.YEAR) +"-"+ date.get(Calendar.MONTH) + "-"+date.get(Calendar.DATE);
             String keyA = minKey +" to "+ maxKey;
             Integer valueA = 0;
-            Iterator iter = this.rbt3.iteratorInRValue(minKey,maxKey);
-            while(iter.hasNext()){ valueA++;}
-            if (valueA > mayor) mayor = valueA;
+            this.rbt3.iteratorInRValue(minKey,maxKey);
+            valueA = this.rbt3.ValueSize();
             keys.agregar(keyA);
-            values.agregar(valueA);
+            double c=200;
+            Double p = valueA/c;
+            String valuesS = "";
+            for(int l =0 ; l< p;l++ ){
+                valuesS = valuesS + '*';
+            }
+            values.agregar(valuesS);
         }
-        if (times % D != 0){
+        /*if (times % D == 0){
             int min = i++;
             date.add(Calendar.DATE, min);
             minKey = date.get(Calendar.YEAR) +"-"+ date.get(Calendar.MONTH) + "-"+date.get(Calendar.DATE);
@@ -521,11 +526,18 @@ public class Modelo{
             Integer valueA = 0;
             Iterator iter = this.rbt3.iteratorInRValue(minKey,maxKey);
             while(iter.hasNext()){ valueA++;}
-            if (valueA > mayor) mayor = valueA;
             keys.agregar(keyA);
+            double c=200;
+            Double p = valueA/c;
+            String valuesS = "";
+            for(int l =0 ; l< p;l++ ){
+                valuesS = valuesS + '*';
+            }
+            values.agregar(valuesS);
             values.agregar(valueA);
-        }
-        Object[] rta = new Object[]{values,keys,mayor};
+        }*/
+
+        Object[] rta = new Object[]{values,keys};
         return rta;
     }
 

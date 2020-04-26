@@ -23,6 +23,7 @@ public class View
 			System.out.println("5.Retornar M comparendos con mayor cercania al CAI del campin.");
 			System.out.println("6.Retornar M comparendos medio de detección, clase de vehículo, tipo de servicio y localidad.");
 			System.out.println("7.Retornar M comparendos dentro de un rango de latitud y un tipo de vehiculo.");
+			System.out.println("8.Imprimir tabla ASCII por rango de fecha dado en todo el anio.");
 
 		}
 
