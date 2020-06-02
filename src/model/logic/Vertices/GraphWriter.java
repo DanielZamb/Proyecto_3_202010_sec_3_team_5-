@@ -50,37 +50,48 @@ public class GraphWriter {
     private static void CrunchifyLog(String str) {
         System.out.println("str");
     }
+    public void crearJson(LinearProbingHashST Graph)
+    {
+        Queue<Integer> keys = Graph.keys();
+        JSONObject obj = new JSONObject();
+        obj.put("name", "Weighted Graph");
+        obj.put("type", "Vertex Collection");
+        JSONArray vertices = new JSONArray();
+        while (!keys.isEmpty())
+        {
+            Vertex<Integer,WeightedEdge<Integer>> v = (Vertex<Integer, WeightedEdge<Integer>>) Graph.get(keys.dequeue());
+            JSONObject verticeActual = new JSONObject();
+            verticeActual.put("type","vertex");
+            verticeActual.put("Id", v.getId());
+            verticeActual.put("LONG", v.getLongi());
+            verticeActual.put("LAT", v.getLat());
 
-    public static void main(String[] args) {
-        Gson gson = new Gson();
-        WGraph test = new WGraph();
-        Bag<WeightedEdge<Integer>> adj = new Bag<>();
-        WeightedEdge<Integer> weightedEdge = new WeightedEdge<>(100,10,0.564);
-        WeightedEdge<Integer> weightedEdge1 = new WeightedEdge<>(100,23,0.345);
-        WeightedEdge<Integer> weightedEdge2 = new WeightedEdge<>(100,45,0.1390);
-        WeightedEdge<Integer> weightedEdge3 = new WeightedEdge<>(100,67,0.3450);
-        adj.add(weightedEdge);
-        adj.add(weightedEdge1);
-        adj.add(weightedEdge2);
-        adj.add(weightedEdge3);
-        test.addVertex(100,0.5677,0.976,(short)1, adj);
-        try {
-            // Constructs a FileWriter given a file name, using the platform's default charset
-            file = new FileWriter(new File("./data/prueba1.txt"));
-            file.write(gson.toJson(test));
-            CrunchifyLog("Successfully Copied JSON Object to File...");
-            CrunchifyLog("\nJSON Object: " + test);
-        } catch (IOException e) {
-            e.printStackTrace();
-
-        } finally {
-            try {
-                file.flush();
-                file.close();
-            } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            JSONArray arcos = new JSONArray();
+            Bag<WeightedEdge<Integer>> adj = v.getAdj();
+            for (WeightedEdge edge : adj)
+            {
+                JSONObject arcoActual = new JSONObject();
+                arcoActual.put("either", edge.either());
+                arcoActual.put("other", edge.other(edge.either()));
+                arcoActual.put("weight", edge.getWeight());
+                arcos.add(arcoActual);
             }
+            verticeActual.put("ADJ_WED", arcos);
+
+            vertices.add(verticeActual);
+        }
+        obj.put("Vertices", vertices);
+        try
+        {
+            FileWriter filesalida = new FileWriter("./data/grafo_persistido.json");
+            filesalida.write(obj.toJSONString());
+            filesalida.flush();
+            filesalida.close();
+
+        }
+        catch (IOException e)
+        {
+            e.printStackTrace();
         }
     }
 }
