@@ -71,7 +71,11 @@ public class Controller {
 				}
 				break;
 				case 2:
-					GraphWriter.writeGraph(modelo.WeightedGraph());
+					modelo.WeightedGraph();
+					view.printMessage("Grafo actualizado con arcos con peso");
+					break;
+				case 3:
+					modelo.writeGraph();
 					view.printMessage("Archivo guardado en /data/weightedGraph.txt!");
 					break;
 			}

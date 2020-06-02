@@ -18,8 +18,7 @@ public class View
 			System.out.println("0.calcular primos");
 			System.out.println("1.Cargar Datos del .txt");
 			System.out.println("2.Calcular peso de los arcos y actualizar grafo");
-
-
+			System.out.println("3.Escribir Json del grafo (no ingresar, time > 6h)");
 		}
 
 		public void printMessage(String mensaje) {

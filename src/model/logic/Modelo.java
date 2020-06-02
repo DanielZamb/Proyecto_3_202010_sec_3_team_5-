@@ -2,6 +2,7 @@ package model.logic;
 
 import me.tongfei.progressbar.*;
 import model.data_structures.*;
+import model.logic.Vertices.GraphWriter;
 import model.logic.Vertices.VertexParser;
 
 import java.util.Iterator;
@@ -70,6 +71,9 @@ public class Modelo{
         }
         NWG = null;
         return WG;
+    }
+    public void writeGraph(){
+        GraphWriter.writeGraph(WG);
     }
     /*public String getMayorOBJ() {
         mayorObj = this.rbt1.max();
