@@ -1,6 +1,7 @@
 package controller;
 
 import model.data_structures.ArregloDinamico;
+import model.data_structures.Graph;
 import model.logic.*;
 
 import java.io.BufferedReader;
@@ -10,6 +11,8 @@ import java.io.IOException;
 import java.util.Scanner;
 import com.google.gson.*;
 
+import model.logic.Vertices.GraphWriter;
+import model.logic.Vertices.VertexParser;
 import view.View;
 
 public class Controller {
@@ -54,115 +57,22 @@ public class Controller {
 				try {
 					Gson gson = new Gson();
 					String json = "./data/Comparendos_DEI_2018_BIG.geojson";
-					BufferedReader br;
-					br = new BufferedReader(new FileReader(json));
-					Comparendos comparendos = gson.fromJson(br, Comparendos.class);
-					//revisar
+					String infoVer = "./data/info vertices.txt";
+					String adj = "./data/lista de adj.txt";
 					view.printMessage("Ingrese tamaño de tabla de simbolos tipo \'Linear Probing\'");
 					int lp = lector.nextInt();
-					view.printMessage("Ingrese tamaño de tabla de simbolos tipo \'Separate Chaining\'");
-					int sc = lector.nextInt();
-					view.printMessage("Ingrese tamaño de la cola de prioridad: ");
-					int pq  = lector.nextInt();
-					Modelo mdl = new Modelo(comparendos.darListaFeatures(),lp,sc,pq,primos);
+					Modelo mdl = new Modelo(infoVer,adj,lp,primos);
 					modelo = mdl;
-					view.printMessage("Valor maximo de OBJECT-ID: \n\t"+modelo.getMayorOBJ());
-					view.printMessage("Valor minimo de OBJECT-ID: \n\t"+modelo.getMinOBJ());
-					br.close();
-				} catch (FileNotFoundException e) {
+					/*view.printMessage("Valor maximo de OBJECT-ID: \n\t"+modelo.getMayorOBJ());
+					view.printMessage("Valor minimo de OBJECT-ID: \n\t"+modelo.getMinOBJ());*/
+				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-			    view.printMessage("Datos Cargados.");
 				break;
 				case 2:
-					view.printMessage("Digite el numero de comparendos a buscar por prioridad:");
-					int M = lector.nextInt();
-					view.printMessage("Loading...");
-					Features[] rta1A = modelo.Req1A(M);
-					for(int i =0;i<CONS && i<rta1A.length;i++){
-						view.printMessage(rta1A[i].toString());
-					}
-					break;
-				case 3:
-					view.printMessage("Digite el numero del mes a buscar:");
-					int Month = lector.nextInt();
-					view.printMessage("Escriba la inicial del dia a buscar:");
-					String day = lector.next();
-					Features[][] rta2A = modelo.Req2A(Month,day);
-					for(int i =0;i<rta2A.length;i++){
-						if (rta2A[i] != null){
-						for (int j=0;j<5 && j<rta2A[i].length ;j++){
-								view.printMessage(rta2A[i][j].toString());
-							}
-						}
-					}
-					break;
-				case 4:
-					view.printMessage("Digite las fechas en el formato YYYY-MM-DD-HH:MM:ss");
-					view.printMessage("Digite la fecha de inicio para el rango de la busqueda:");
-					String sDate = lector.next();
-					view.printMessage("Digite la fecha final para el rango de la busqueda:");
-					String eDate = lector.next();
-					view.printMessage("Digite la localidad en la cual realizar la busqueda:");
-					String local = lector.next();
-					ArregloDinamico<Features> rta3A = modelo.Req3A(sDate,eDate,local);
-					for(int i =0;i<CONS && i<rta3A.darTamano();i++){ //LOCALIDADES CON ESPACIO, SE PUTEA
-						view.printMessage(rta3A.darElemento(i).toString());
-					}
-					break;
-				case 5:
-					view.printMessage("Digite el numero de comparendos a buscar por prioridad:");
-					int M1B = lector.nextInt();
-					view.printMessage("Loading...");
-					Features[] rta1B = modelo.Req1B(M1B);
-					for(int i =0;i<CONS && i<rta1B.length;i++){
-						view.printMessage(rta1B[i].toString());
-					}
-					break;
-				case 6:
-					view.printMessage("Digite el medio de deteccion a buscar:");
-					String meDet = lector.next();
-					view.printMessage("Digite la clase de vehiculo a buscar:");
-					String veh = lector.next();
-					view.printMessage("Digite el tipo de servicio a buscar:");
-					String serv = lector.next();
-					view.printMessage("Digite la localidad a buscar:");
-					String local_ = lector.next();
-					Features[] rta2B = modelo.Req2B(meDet,veh,serv,local_);
-					for(int i =0;i<rta2B.length && i<CONS;i++){ //LOCALIDADES CON ESPACIO, SE PUTEA
-						if (rta2B[i] != null){
-							view.printMessage(rta2B[i].toString());
-						}
-					}
-					break;
-				case 7:
-					view.printMessage("Digite la latitud de inicio para el rango de la busqueda:");
-					String sLat = lector.next();
-					view.printMessage("Digite la latitud final para el rango de la busqueda:");
-					String eLat = lector.next();
-					view.printMessage("Digite el tipo de vehiculo para el cual realizar la busqueda:");
-					String veh_ = lector.next();
-					ArregloDinamico<Features> rta3B = modelo.Req3B(sLat,eLat,veh_);
-					for(int i =0;i<CONS && i<rta3B.darTamano();i++){
-						view.printMessage(rta3B.darElemento(i).toString());
-					}
-					break;
-				case 8:
-					view.printMessage("Digite el rango de dias para el cual buscar comparendos:");
-					int D = lector.nextInt();
-					Object[] rta1C = modelo.Req1C(D);
-					ArregloDinamico<Integer> values = (ArregloDinamico<Integer>) rta1C[0];
-					ArregloDinamico<String> keys = (ArregloDinamico<String>) rta1C[1];
-					String leftAlignFormat = "| %-24s | %-150s |%n";
-					System.out.format("+--------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+%n");
-					System.out.format("| Rango de Fechas          | Comparendos durante el anio  																		                                                    |%n");
-					System.out.format("+--------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+%n");
-					for (int i = 0;i< keys.darTamano() ; i++) {
-
-						System.out.format(leftAlignFormat,keys.darElemento(i),values.darElemento(i));
-					}
-					System.out.format("+--------------------------+--------------------------------------------------------------------------------------------------------------------------------------------------------+%n");
+					GraphWriter.writeGraph(modelo.WeightedGraph());
+					view.printMessage("Archivo guardado en /data/weightedGraph.txt!");
 					break;
 			}
 		}

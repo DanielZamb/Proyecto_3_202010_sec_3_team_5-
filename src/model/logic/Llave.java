@@ -1,6 +1,7 @@
 package model.logic;
 
 import model.data_structures.ArregloDinamico;
+import model.logic.comparendos.Features;
 
 public class Llave {
     ArregloDinamico<Features> values;

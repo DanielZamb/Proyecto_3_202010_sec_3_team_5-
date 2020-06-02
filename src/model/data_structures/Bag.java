@@ -2,7 +2,7 @@ package model.data_structures;
 
 import java.util.Iterator;
 
-public class Bag<T> {
+public class Bag<T> implements Iterable<T>{
     private Node first;
     private class Node{
         T item;

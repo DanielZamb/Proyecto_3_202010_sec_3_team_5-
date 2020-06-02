@@ -1,5 +1,7 @@
 package model.logic;
 
+import model.logic.comparendos.Features;
+
 import java.util.Comparator;
 
 public class Quick{

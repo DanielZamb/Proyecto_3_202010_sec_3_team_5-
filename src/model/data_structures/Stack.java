@@ -1,6 +1,8 @@
 package model.data_structures;
 
-public class Stack<T> implements StackI{
+import java.util.Iterator;
+
+public class Stack<T> implements StackI,Iterable<T>{
     private Nodo<T> first;
     // top of stack (most recently added node)
     private int N;      // number of items
@@ -27,5 +29,20 @@ public class Stack<T> implements StackI{
     public T peek(){
         T item = first.getInfo();
         return item;
+    }
+    public Iterator<T> iterator()
+    { return new ListIterator(); }
+    private class ListIterator implements Iterator<T>
+    {
+        private Nodo<T> current = first;
+        public boolean hasNext()
+        { return current != null; }
+        public void remove() { }
+        public T next()
+        {
+            T item = current.getInfo();
+            current = current.getSiguiente();
+            return item;
+        }
     }
 }

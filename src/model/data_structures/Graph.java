@@ -1,20 +1,15 @@
 package model.data_structures;
 
-import model.logic.Primos;
-
-import javax.xml.stream.events.EntityDeclaration;
 import java.util.Iterator;
 
-public class Graph<K extends Comparable<K>,V> {
+public class Graph<K extends Comparable<K>> {
     public int V;
     public int E;
-    private LinearProbingHashST<K,Bag<Edge<K>>> G;
-    private SeparateChainingHashST<K,V> vertexDB;
-    public Graph(int V,Primos primos){
-        this.V = V;
-        this.E = 0;
-        G = new LinearProbingHashST<>(V,primos);
-        vertexDB = new SeparateChainingHashST<>(V,primos);
+    private LinearProbingHashST<K,Vertex<K,WeightedEdge<K>>> G;
+    public Graph(int E, LinearProbingHashST G){
+        this.G = G;
+        this.V = (int) G.sizeN();
+        this.E = E;
     }
     public int V(){
         return V;
@@ -22,28 +17,27 @@ public class Graph<K extends Comparable<K>,V> {
     public int E(){
         return E;
     }
-    public void addVertex(K vertex,V infoVertex){
-        vertexDB.put(vertex,infoVertex);
-        G.put(vertex,new Bag<>());
+    public void addVertex(K idVertex,Vertex<K, WeightedEdge<K>> infoVertex){
+        G.put(idVertex,infoVertex);
         V++;
     }
-    public V getInfoVertex(K vertex){
-        V value = vertexDB.get(vertex);
+    public Vertex<K, WeightedEdge<K>> getInfoVertex(K idVertex){
+        Vertex<K, WeightedEdge<K>> value = G.get(idVertex);
         boolean r = value != null;
         if (r) return value;
         else return null;
     }
-    public void setInfoVertex(K vertex,V infoVertex){
-        vertexDB.put(vertex,infoVertex);
+    public void setInfoVertex(K idVertex,Vertex<K, WeightedEdge<K>> infoVertex){
+        G.put(idVertex,infoVertex);
     }
     //all the vertices are already loaded in the data structure.
     public void addEdge(K initVertex, K finVertex,double cost){
-        Edge<K> edgeInit = new Edge<>(initVertex,finVertex,cost);
-        Edge<K> edgeFin = new Edge<>(finVertex,initVertex,cost);
-        Bag<Edge<K>> updateInit = G.get(initVertex);
-        Bag<Edge<K>> updateFin = G.get(finVertex);
-        updateInit.add(edgeInit);
-        updateFin.add(edgeFin);
+        WeightedEdge<K> edgeInit = new WeightedEdge<>(initVertex,finVertex,cost);
+        WeightedEdge<K> edgeFin = new WeightedEdge<>(finVertex,initVertex,cost);
+        Vertex<K, WeightedEdge<K>> updateInit = G.get(initVertex);
+        Vertex<K, WeightedEdge<K>> updateFin = G.get(finVertex);
+        updateInit.getAdj().add(edgeInit);
+        updateFin.getAdj().add(edgeFin);
         G.put(initVertex,updateInit);
         G.put(finVertex,updateFin);
         E++;
@@ -51,13 +45,13 @@ public class Graph<K extends Comparable<K>,V> {
     public double getCostEdge(K initVertex, K finVertex){
         double cost = 0.0;
         boolean cent = false;
-        Bag<Edge<K>> edges = G.get(initVertex);
-        Iterator iter = edges.iterator();
+        Vertex<K, WeightedEdge<K>> v = G.get(initVertex);
+        Iterator iter = v.getAdj().iterator();
         while(iter.hasNext()&& !cent){
-            Edge<K> currentEdge =(Edge<K>) iter.next();
-            K v = currentEdge.either();
-            K w = currentEdge.other(v);
-            if (v == initVertex && w == finVertex){
+            WeightedEdge<K> currentEdge = (WeightedEdge<K>) iter.next();
+            K vid = currentEdge.either();
+            K wid = currentEdge.other(vid);
+            if (vid == initVertex && wid == finVertex){
                 cost = currentEdge.getWeight();
                 cent = true;
             }
@@ -65,20 +59,32 @@ public class Graph<K extends Comparable<K>,V> {
         return cost;
     }
     public void setCostEdge(K initVertex, K finVertex,double cost){
-        Bag<Edge<K>> edges = G.get(initVertex);
+        Vertex<K,WeightedEdge<K>> v = G.get(initVertex);
         boolean cent = false;
-        Iterator iter = edges.iterator();
+        Iterator iter = v.getAdj().iterator();
         while(iter.hasNext()&& !cent){
-            Edge<K> currentEdge =(Edge<K>) iter.next();
-            K v = currentEdge.either();
-            K w = currentEdge.other(v);
-            if (v == initVertex && w == finVertex){
-                edges.put(currentEdge,new Edge<>(initVertex,finVertex,cost));
+            WeightedEdge<K> currentEdge =(WeightedEdge<K>) iter.next();
+            K vid = currentEdge.either();
+            K wid = currentEdge.other(vid);
+            if (vid == initVertex && wid == finVertex){
+                currentEdge.setWeight(cost);
                 cent = true;
             }
         }
     }
-    public Iterable<K> adj(K sourceVertex){
+    public Bag<WeightedEdge<K>> adj(K sourceVertex){ //la bolsa implementa un iterable
+        Vertex<K,WeightedEdge<K>> v = G.get(sourceVertex);
+        return v.getAdj();
+    }
+    public void uncheck(){
+        Queue<K> keys = G.keys();
+        while(!keys.isEmpty()){
+            Vertex<K,WeightedEdge<K>> v = G.get(keys.dequeue());
+            v.unmark();
+            G.put(v.getId(),v);
+        }
+    }
+    public void dfs(K source){
     }
 
 
