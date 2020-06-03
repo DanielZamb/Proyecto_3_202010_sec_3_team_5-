@@ -75,24 +75,25 @@ public class Controller {
 					view.printMessage("Valor maximo de OBJECT-ID (Comparendos): \n\t"+modelo.getMayorOBJComparendo().toString());
 					view.printMessage("Valor maximo de OBJECT-ID (Estaciones): \n\t"+modelo.getMayorEstacion().toString());
 					view.printMessage("Valor maximo de OBJECT-ID (Vertice): \n\t"+modelo.getIdMayorVertice().toString());
-					view.printMessage("Valor maximo de OBJECT-ID (Arco): \n\t"+modelo.getIdMayorVertice().toString());
-					view.printMessage("Total de comparendos en el archivo : \n\t"+modelo.getLpComp().sizeN());
+					view.printMessage("Total de comparendos en el archivo : \n\t"+c.darListaFeatures().size());
 					view.printMessage("Total de Estaciones de Policia en el archivo : \n\t"+modelo.getLpEst().sizeN());
 					view.printMessage("Total de Vertices en el archivo : \n\t"+modelo.getWG().sizeN());
-					view.printMessage("Total de Arcos en el archivo : \n\t"+modelo.getMayorOBJComparendo().toString());
+					view.printMessage("Total de Arcos en el archivo : \n\t"+modelo.getArcos());
+					view.printMessage("Rango de coordenadas de los vertices : \n\t"+"["+modelo.getMayorCoorVertex()+"]-["+modelo.getMinCoorVertice()+"]");
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				break;
-				/*case 2:
-					modelo.WeightedGraph();
-					view.printMessage("Grafo actualizado con arcos con peso");
+				case 2:
+					view.printMessage("Ingrese la longitud del punto");
+					String Long = lector.next();
+					view.printMessage("Ingrese la latitud del punto");
+					String Lat = lector.next();
+					Double sLat = Double.parseDouble(Lat);
+					Double sLong = Double.parseDouble(Long);
+					modelo.getNearestVertex(sLong,sLat);
 					break;
-				case 3:
-					modelo.writeGraph();
-					view.printMessage("Archivo guardado en /data/weightedGraph.txt!");
-					break;*/
 			}
 		}
 		

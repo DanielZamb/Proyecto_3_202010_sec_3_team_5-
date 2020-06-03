@@ -1,23 +1,26 @@
 package model.data_structures;
 
-import org.jetbrains.annotations.NotNull;
+import model.logic.comparendos.Features;
 
 public class Vertex<K extends Comparable<K>,V> implements Comparable<Vertex<K,V>> {
     private K id;
     private double lat;
-
-
     private double longi;
     private Bag<V> adj;
-    short marked;
+    private Bag<Features> cBag;
+    private short marked;
     public Vertex(K id, double lat, double longi){
         this.id = id;
         this.lat = lat;
         this.longi = longi;
         adj = new Bag<>();
+        cBag = new Bag<>();
     }
     public void addAdj(V v){
         adj.add(v);
+    }
+    public void addCmp(Features cmp){
+        cBag.add(cmp);
     }
     public Bag<V> getAdj(){
         return adj;

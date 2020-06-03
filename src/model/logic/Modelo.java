@@ -7,6 +7,7 @@ import model.logic.comparendos.Features;
 import model.logic.estaciones.FeaturesEstaciones;
 
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -17,18 +18,19 @@ public class Modelo{
      * Atributos del modelo del mundo
      */
     private LinearProbingHashST<Integer,Vertex<Integer,WeightedEdge<Integer>>> WG;
-    private LinearProbingHashST<String,Features> lpComp;
+    private LinearProbingHashST<String,Features[]> lpComp;
     private LinearProbingHashST<String,FeaturesEstaciones> lpEst;
     private RedBlackBST<String,Integer> rbt1;
     private String[] comparableTree;
     private Features[] comparableF;
     private FeaturesEstaciones[] comparableE;
     private int tamanio;
+    private int Arcos;
     private String mayorCoorVertices;
     private Vertex<Integer,WeightedEdge<Integer>> idMayorVertice;
     private Features mayorComparendo;
     private FeaturesEstaciones mayorEstacion;
-    private String minObjVertices;
+    private String minCoorVertices;
     private Double[] MinMax;
 
     public Modelo() {
@@ -46,7 +48,7 @@ public class Modelo{
             RBTs(listaVertices);
             HASH(tComp,tEst,primos,listaEstaciones,listaComparendos);
             getMayorCoorVertex();
-            getMinOBJ();
+            getMinCoorVertice();
             /*Quick.sort(comparableF,"Key");
             this.lp = new LinearProbingHashST<>(lp,primos);
             this.sc = new SeparateChainingHashST<>(sc,primos);
@@ -71,15 +73,15 @@ public class Modelo{
             vertex.getARCOS().forEach(edge ->{
                 WeightedEdge<Integer> weightedEdge = new WeightedEdge<>(v.getId(),edge.getIDFINAL(),edge.getCOSTO());
                 v.addAdj(weightedEdge);
+                Arcos++;
             });
-
             WG.put(v.getId(),v);
         });
     }
     public void RBTs(List<VertexParserJSON> listaVertices){
         comparableTree = new String[listaVertices.size()];
         for (int i=0;i<listaVertices.size();i++){
-            String s = listaVertices.get(i).getLATITUD()+","+listaVertices.get(i).getLONGITUD()+","+listaVertices.get(i).getIDINICIAL();
+            String s = listaVertices.get(i).getLONGITUD()+","+listaVertices.get(i).getLATITUD()+","+listaVertices.get(i).getIDINICIAL();
             comparableTree[i] = s;
         }
         this.rbt1 = new RedBlackBST<>(new Comparator() {
@@ -131,6 +133,25 @@ public class Modelo{
             public int compare(Object o1, Object o2) {
                 Features f1 = (Features) o1;
                 Features f2 = (Features) o2;
+                double lat1 = f1.getGeometry().DarCoordenadas().get(0);
+                double longi1 =f1.getGeometry().DarCoordenadas().get(1);
+                double lat2 = f2.getGeometry().DarCoordenadas().get(0);
+                double longi2 = f2.getGeometry().DarCoordenadas().get(1);
+                int c=0;
+                if (lat1>lat2) c=1;
+                else if(lat1<lat2) c=-1;
+                else if (lat1==lat2){
+                    if (longi1>longi2) c = 1;
+                    else if (longi1<longi2) c=-1;
+                }
+                return c;
+            }
+        };
+        Comparator coorComp= new Comparator() {
+            @Override
+            public int compare(Object o1, Object o2) {
+                Features f1 = (Features) o1;
+                Features f2 = (Features) o2;
                 return f1.getProperties().getOBJECTID().compareTo(f2.getProperties().getOBJECTID());
             }
         };
@@ -144,57 +165,78 @@ public class Modelo{
         };
         Quick.sort(comparableF,objComp);
         mayorComparendo = comparableF[comparableF.length-1];
+        Quick.sort(comparableF,coorComp);
         Quick.sort(comparableE,objEst);
         mayorEstacion = comparableE[comparableE.length-1];
         this.lpComp = new LinearProbingHashST<>(tComp,primos);
         this.lpEst = new LinearProbingHashST<>(tEst,primos);
-        KeysLp(comparableF,comparableE);
+        KeysLp(comparableF,comparableE,coorComp);
     }
-    public void KeysLp(Features[] listComp,FeaturesEstaciones[] listEst){
-        for(int i=0;i<listComp.length;i++){
-            this.lpComp.put(listComp[i].getGeometry().DarCoordenadas().get(0)+","+listComp[i].getGeometry().DarCoordenadas().get(1),listComp[i]);
+    public void KeysLp(Features[] listComp,FeaturesEstaciones[] listEst,Comparator c){
+        comparableF = null;
+        try (ProgressBar pb = new ProgressBar("Loading Data", listComp.length,ProgressBarStyle.ASCII)) {
+        }
+        Llave dataPair = new Llave();
+        int l=0;
+        for(int j=0;j<listComp.length;j++){
+            int comp = 0;
+            if (!(j == listComp.length-1)) comp = c.compare(listComp[j],listComp[j+1]);
+            if (comp != 0) {
+                String key = dataPair.keyP3C(listComp[j]);
+                ArregloDinamico<Features> valuesTemp =  dataPair.getArr();
+                for (;l<=j;l++)
+                    valuesTemp.agregar(listComp[l]);
+                Features[] values = dataPair.values();
+                Quick.sort(values, new Comparator<Features>() {
+                    @Override
+                    public int compare(Features o1, Features o2) {
+                        return o1.getProperties().getOBJECTID().compareTo(o2.getProperties().getOBJECTID());
+                    }
+                });
+                lpComp.put(key,values);
+                dataPair.getArr().clear();
+            }
+            if (j == listComp.length-1){
+                String key = dataPair.keyP3C(listComp[j]);
+                ArregloDinamico<Features> valuesTemp =  dataPair.getArr();
+                for (;l<=j;l++)
+                    valuesTemp.agregar(listComp[l]);
+                Features[] values = dataPair.values();
+                Quick.sort(values, new Comparator<Features>() {
+                    @Override
+                    public int compare(Features o1, Features o2) {
+                        return o1.getProperties().getOBJECTID().compareTo(o2.getProperties().getOBJECTID());
+                    }
+                });
+                lpComp.put(key,values);
+                dataPair.getArr().clear();
+            }
+
         }
         for(int i=0;i<listEst.length;i++){
             this.lpEst.put(listEst[i].getGeometry().DarCoordenadas().get(0)+","+listEst[i].getGeometry().DarCoordenadas().get(1),listEst[i]);
         }
-        /*int l=0;
-        for(int j=0;j<list.length;j++){
-            int comp = 0;
-            if (!(j == list.length-1)) comp = c.compare(list[j],list[j+1]);
-            if (comp != 0) {
-                String key = dataPair.keyReq2A(list[j]);
-                ArregloDinamico<Features> valuesTemp =  dataPair.getArr();
-                for (;l<=j;l++)
-                    valuesTemp.agregar(list[l]);
-                Features[] values = dataPair.values();
-                Quick.sort(values, new Comparator<Features>() {
-                    @Override
-                    public int compare(Features o1, Features o2) {
-                        return o1.getProperties().getOBJECTID().compareTo(o2.getProperties().getOBJECTID());
-                    }
-                });
-                lp.put(key,values);
-                dataPair.getArr().clear();
-            }
-            if (j == list.length-1){
-                String key = dataPair.keyReq2A(list[j]);
-                ArregloDinamico<Features> valuesTemp =  dataPair.getArr();
-                for (;l<=j;l++)
-                    valuesTemp.agregar(list[l]);
-                Features[] values = dataPair.values();
-                Quick.sort(values, new Comparator<Features>() {
-                    @Override
-                    public int compare(Features o1, Features o2) {
-                        return o1.getProperties().getOBJECTID().compareTo(o2.getProperties().getOBJECTID());
-                    }
-                });
-                lp.put(key,values);
-                dataPair.getArr().clear();
-            }
-        }*/
+        comparableE = null;
     }
-    public Integer getNearestVertex(double sLat, double sLong){
-        return 0;
+    public Integer getNearestVertex(double sLong, double sLat){
+        MaxPQ<String> pq = new MaxPQ<>(rbt1.size() + 10, new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                String temp[] = o1.split(",");
+                Double dist1 = Double.parseDouble(temp[1]);
+                String temp2[] = o2.split(",");
+                Double dist2 = Double.parseDouble(temp2[1]);
+                return dist1.compareTo(dist2);
+            }
+        });
+        Iterator iter = rbt1.iteratorInRValue(minCoorVertices,mayorCoorVertices);
+        while (iter.hasNext()){
+            Vertex<Integer,WeightedEdge<Integer>> v = WG.get((Integer)iter.next());
+            double dist = AvDistance.distance(sLat,sLong,v.getLat(),v.getLongi());
+            pq.put(v.getId()+","+dist);
+        }
+        String sVertex[] = pq.delMax().split(",");
+        return Integer.parseInt(sVertex[0]);
     }
     public String getMayorCoorVertex() {
         mayorCoorVertices = this.rbt1.max();
@@ -210,9 +252,9 @@ public class Modelo{
         idMayorVertice = WG.get(228045);
         return idMayorVertice;
     }
-    public String getMinOBJ(){
-        minObjVertices = this.rbt1.min();
-        return minObjVertices;
+    public String getMinCoorVertice(){
+        minCoorVertices = this.rbt1.min();
+        return minCoorVertices;
     }
     public LinearProbingHashST<Integer, Vertex<Integer, WeightedEdge<Integer>>> getWG() {
         return WG;
@@ -222,11 +264,11 @@ public class Modelo{
         this.WG = WG;
     }
 
-    public LinearProbingHashST<String, Features> getLpComp() {
+    public LinearProbingHashST<String, Features[]> getLpComp() {
         return lpComp;
     }
 
-    public void setLpComp(LinearProbingHashST<String, Features> lpComp) {
+    public void setLpComp(LinearProbingHashST<String, Features[]> lpComp) {
         this.lpComp = lpComp;
     }
 
@@ -244,6 +286,9 @@ public class Modelo{
 
     public void setRbt1(RedBlackBST<String, Integer> rbt1) {
         this.rbt1 = rbt1;
+    }
+    public int getArcos(){
+        return Arcos;
     }
 }
 

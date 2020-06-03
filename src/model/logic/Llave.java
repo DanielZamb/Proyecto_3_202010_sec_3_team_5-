@@ -39,6 +39,9 @@ public class Llave {
     public String keyA(String date,String type,String infrac){
         return "("+date+","+type+","+infrac+")";
     }
+    public String keyP3C(Features that){
+        return that.getGeometry().DarCoordenadas().get(0)+","+that.getGeometry().DarCoordenadas().get(1);
+    }
     public ArregloDinamico getArr(){
         return values;
     }
