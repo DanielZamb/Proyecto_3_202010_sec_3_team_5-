@@ -6,17 +6,24 @@ public class WeightedEdge<K> implements Comparable<WeightedEdge> {
     private final K v;
     private final K w;
     private double weight;
-
+    private double weight2;
     public WeightedEdge(K v, K w, double weight){
         this.v = v;
         this.w = w;
         this.weight = weight;
+        weight2 = 0.0;
     }
     public double getWeight(){
         return weight;
     }
     public void setWeight(double cost){
         weight = cost;
+    }
+    public void setWeight2(double cost) {
+        weight2 = cost;
+    }
+    public double getWeight2(){
+        return weight2;
     }
     public K either() {
         return v;

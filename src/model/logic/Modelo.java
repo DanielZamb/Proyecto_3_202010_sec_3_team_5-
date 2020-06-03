@@ -17,6 +17,7 @@ public class Modelo{
     /**
      * Atributos del modelo del mundo
      */
+    private Graph<Integer> G;
     private LinearProbingHashST<Integer,Vertex<Integer,WeightedEdge<Integer>>> WG;
     private LinearProbingHashST<String,Features[]> lpComp;
     private LinearProbingHashST<String,FeaturesEstaciones> lpEst;
@@ -45,6 +46,7 @@ public class Modelo{
         try {
             long startTime = System.nanoTime();
             GRAPH(grafo,primos,listaVertices);
+            G = new Graph<>(Arcos,WG);
             RBTs(listaVertices);
             HASH(tComp,tEst,primos,listaEstaciones,listaComparendos);
             getMayorCoorVertex();
@@ -238,6 +240,119 @@ public class Modelo{
         String sVertex[] = pq.delMax().split(",");
         return Integer.parseInt(sVertex[0]);
     }
+    public void cargarComparendosGrafo(){
+        Queue<String> keysCmp = lpComp.keys();
+        while (!keysCmp.isEmpty()){
+            String coord[] = keysCmp.dequeue().split(",");
+            int vid = getNearestVertex(Double.parseDouble(coord[0]),Double.parseDouble(coord[1]));
+            Vertex<Integer,WeightedEdge<Integer>> v = WG.get(vid);
+            Features[] toLoop = lpComp.get(coord[0]+","+coord[1]);
+            for (int i=0;i<toLoop.length;i++){
+                v.addCmp(toLoop[i]);
+            }
+            WG.put(v.getId(),v);
+        }
+    }
+    public void actualizarPesosGrafo(){
+        Queue<Integer> keys = WG.keys();
+        while(!keys.isEmpty()){
+            Integer key = keys.dequeue();
+            Vertex<Integer,WeightedEdge<Integer>> v = WG.get(key);
+            Iterator iter = v.getAdj().iterator();
+            while (iter.hasNext()){
+                WeightedEdge<Integer> arc = (WeightedEdge<Integer>) iter.next();
+                v.getAdj().delete(arc);
+                Integer w = arc.other(v.getId());
+                double cost = 0.0;
+                Iterator iter2 = WG.get(w).getcBag().iterator();
+                while (iter2.hasNext()){
+                    cost++;
+                }
+                arc.setWeight2(cost);
+                v.addAdj(arc);
+            }
+            WG.put(v.getId(),v);
+        }
+    }
+    public void cargarEstacionesGrafo(){
+        Queue<String> keysEst = lpEst.keys();
+        while (!keysEst.isEmpty()){
+            String coord[] = keysEst.dequeue().split(",");
+            int vid = getNearestVertex(Double.parseDouble(coord[0]),Double.parseDouble(coord[1]));
+            Vertex<Integer,WeightedEdge<Integer>> v = WG.get(vid);
+            FeaturesEstaciones toAdd = lpEst.get(coord[0]+","+coord[1]);
+            v.getEstBag().add(toAdd);
+            WG.put(v.getId(),v);
+        }
+    }
+    public String req1A(Double long1, Double lat1, Double long2, Double lat2)
+    {
+        Vertex<Integer, WeightedEdge<Integer>> origen = G.getInfoVertex(getNearestVertex(long1, lat1));
+        G.shortestPaths(origen, 1);
+        Stack<Vertex<Integer, WeightedEdge<Integer>>> stack = new Stack<>();
+        Vertex<Integer, WeightedEdge<Integer>> destino = G.getInfoVertex(getNearestVertex(long2, lat2));
+        while(destino.arrivalEdge != null)
+        {
+            stack.push(destino);
+            destino = destino.arrivalEdge.destiny.id.equals(destino.id)? destino.arrivalEdge.origin : destino.arrivalEdge.destiny;
+        }
+        if(stack.isEmpty())
+        {
+            return "No existe camino entre estas 2 cordenadas";
+        }
+        else
+        {
+            StringBuilder rta = new StringBuilder("\nEl camino más corto es: [");
+            for(Vertex<Integer, WeightedEdge<Integer>> actual : stack) {
+                rta.append(actual.getId());
+                rta.append("-");
+            }
+            return rta.toString();
+        }
+    }
+    /*public String req2A(int M)
+    {
+        MaxHeapCP<Comparendo> masGraves = new MaxHeapCP<Comparendo>(datosComparendos.length);
+        for(Comparendo a : datosComparendos)
+        {
+            a.cambiarCompraTo(1);
+            masGraves.agregar(a);
+        }
+        Graph<Integer, Interseccion> grafito = new Graph<Integer, Interseccion>(M);
+        int i = 0;
+        while(i < M)
+        {
+            Comparendo a = masGraves.sacarMax();
+            Integer idInter = a.keyVertex;
+            if(grafito.getVertex(idInter) == null)
+                grafito.addVertex(idInter, grafo.getInfoVertex(idInter));
+            i++;
+        }
+        Iterator<Integer> vertexId = grafito.vertices.iterator();
+        while(vertexId.hasNext())
+        {
+            Integer actualID = vertexId.next();
+            Iterator<Integer> otherVertexId = grafito.vertices.iterator();
+            while(otherVertexId.hasNext())
+            {
+                Integer otherID = otherVertexId.next();
+                if(grafito.getEdge(actualID, otherID) == null && grafito.getEdge(otherID, actualID) == null)
+                {
+                    Interseccion interA = grafito.getInfoVertex(actualID);
+                    Interseccion interB = grafito.getInfoVertex(otherID);
+                    grafito.addEdge(actualID, otherID, haversine(interA.longitud, interA.latitud, interB.longitud, interB.latitud));
+                }
+            }
+        }
+        grafito.generateMST(1);
+        vertexId = grafito.vertices.iterator();
+        Queue<Edge<Integer, Interseccion>> graficar = graficarMST(grafito);
+        @SuppressWarnings("unused")
+        Maps mapa = new Maps("1B", graficar, true);
+        String rta = "El arbol formado fue: \n";
+        grafito.generateMST(1);
+        return consolaParteB(rta, graficar);
+    }*/
     public String getMayorCoorVertex() {
         mayorCoorVertices = this.rbt1.max();
         return mayorCoorVertices;

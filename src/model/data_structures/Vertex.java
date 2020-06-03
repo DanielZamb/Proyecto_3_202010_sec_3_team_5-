@@ -1,6 +1,7 @@
 package model.data_structures;
 
 import model.logic.comparendos.Features;
+import model.logic.estaciones.FeaturesEstaciones;
 
 public class Vertex<K extends Comparable<K>,V> implements Comparable<Vertex<K,V>> {
     private K id;
@@ -8,6 +9,7 @@ public class Vertex<K extends Comparable<K>,V> implements Comparable<Vertex<K,V>
     private double longi;
     private Bag<V> adj;
     private Bag<Features> cBag;
+    private Bag<FeaturesEstaciones> estBag;
     private short marked;
     public Vertex(K id, double lat, double longi){
         this.id = id;
@@ -24,6 +26,12 @@ public class Vertex<K extends Comparable<K>,V> implements Comparable<Vertex<K,V>
     }
     public Bag<V> getAdj(){
         return adj;
+    }
+    public Bag<Features> getcBag() {
+        return cBag;
+    }
+    public Bag<FeaturesEstaciones> getEstBag(){
+        return estBag;
     }
     /*
      * marks the vertex as visited.

@@ -92,7 +92,7 @@ public class Controller {
 					String Lat = lector.next();
 					Double sLat = Double.parseDouble(Lat);
 					Double sLong = Double.parseDouble(Long);
-					modelo.getNearestVertex(sLong,sLat);
+					view.printMessage("Id de vertice mas cercano: "+modelo.getNearestVertex(sLong,sLat));
 					break;
 			}
 		}
