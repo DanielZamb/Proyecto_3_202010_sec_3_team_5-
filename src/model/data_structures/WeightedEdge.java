@@ -32,6 +32,6 @@ public class WeightedEdge<K> implements Comparable<WeightedEdge> {
         else return 0;
     }
     public String toString(){
-        return "this edge is incident to: "+ w.toString()+","+v.toString()+"\n and its weight: " +weight;
+        return w.toString()+"-"+v.toString()+"\n cost: " +weight;
     }
 }

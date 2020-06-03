@@ -1,6 +1,8 @@
 package model.logic.estaciones;
 
-public class FeaturesEstaciones {
+import org.jetbrains.annotations.NotNull;
+
+public class FeaturesEstaciones implements Comparable<FeaturesEstaciones> {
     private String type;
     private Integer id;
     private GeometryEstaciones geometry;
@@ -50,5 +52,9 @@ public class FeaturesEstaciones {
                         "Caracteristicas:\n"+
                         "\t"+this.properties.toString();
         return str;
+    }
+    @Override
+    public int compareTo(@NotNull FeaturesEstaciones that) {
+        return this.properties.getOBJECTID().compareTo(that.properties.getOBJECTID());
     }
 }

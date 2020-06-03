@@ -1,12 +1,17 @@
 package model.logic;
 
 import model.data_structures.ArregloDinamico;
+import model.data_structures.Vertex;
+import model.data_structures.WeightedEdge;
 import model.logic.comparendos.Features;
 
 public class Llave {
     ArregloDinamico<Features> values;
     public Llave (){
         values = new ArregloDinamico<>(20);
+    }
+    public String keyNearV(Vertex<Integer,WeightedEdge<Integer>> v){
+        return "("+v.getLat()+","+v.getLongi()+","+v.getId()+")";
     }
     public String keyReq3A(Features that){
         return "("+that.getProperties().getLOCALIDAD()+","+that.getProperties().getFECHA_HORA()+")";

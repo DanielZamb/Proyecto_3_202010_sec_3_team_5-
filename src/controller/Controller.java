@@ -1,18 +1,16 @@
 package controller;
 
-import model.data_structures.ArregloDinamico;
-import model.data_structures.Graph;
 import model.logic.*;
 
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.Scanner;
 import com.google.gson.*;
 
-import model.logic.Vertices.GraphWriter;
-import model.logic.Vertices.VertexParser;
+import model.logic.Vertices.GraphParser;
+import model.logic.comparendos.Comparendos;
+import model.logic.estaciones.EstacionPolicia;
 import view.View;
 
 public class Controller {
@@ -56,28 +54,45 @@ public class Controller {
 				view.printMessage("Loading...");
 				try {
 					Gson gson = new Gson();
-					String json = "./data/Comparendos_DEI_2018_BIG.geojson";
-					String infoVer = "./data/info vertices.txt";
-					String adj = "./data/lista de adj.txt";
-					view.printMessage("Ingrese tamaño de tabla de simbolos tipo \'Linear Probing\'");
+					String jsonGrafo = "./data/grafo.geojson";
+					String jsonEstaciones = "./data/estacionpolicia.geojson";
+					String jsonComparendos = "./data/Comparendos_DEI_2018_BIG.geojson";
+					BufferedReader br;
+					br = new BufferedReader(new FileReader(jsonGrafo));
+					GraphParser G = gson.fromJson(br, GraphParser.class);
+					br = new BufferedReader(new FileReader(jsonEstaciones));
+					EstacionPolicia e = gson.fromJson(br,EstacionPolicia.class);
+					br = new BufferedReader(new FileReader(jsonComparendos));
+					Comparendos c = gson.fromJson(br,Comparendos.class);
+					view.printMessage("Ingrese tamaño del grafo (# vertices)");
+					int grafo = lector.nextInt();
+					view.printMessage("Ingrese tamaño de tabla de simbolos de los comparendos");
 					int lp = lector.nextInt();
-					Modelo mdl = new Modelo(infoVer,adj,lp,primos);
+					view.printMessage("Ingrese tamaño de tabla de simbolos de las estaciones");
+					int lp2 = lector.nextInt();
+					Modelo mdl = new Modelo(G.getFeatures(),e.darListaFeatures(),c.darListaFeatures(),grafo,lp,lp2,primos);
 					modelo = mdl;
-					/*view.printMessage("Valor maximo de OBJECT-ID: \n\t"+modelo.getMayorOBJ());
-					view.printMessage("Valor minimo de OBJECT-ID: \n\t"+modelo.getMinOBJ());*/
+					view.printMessage("Valor maximo de OBJECT-ID (Comparendos): \n\t"+modelo.getMayorOBJComparendo().toString());
+					view.printMessage("Valor maximo de OBJECT-ID (Estaciones): \n\t"+modelo.getMayorEstacion().toString());
+					view.printMessage("Valor maximo de OBJECT-ID (Vertice): \n\t"+modelo.getIdMayorVertice().toString());
+					view.printMessage("Valor maximo de OBJECT-ID (Arco): \n\t"+modelo.getIdMayorVertice().toString());
+					view.printMessage("Total de comparendos en el archivo : \n\t"+modelo.getLpComp().sizeN());
+					view.printMessage("Total de Estaciones de Policia en el archivo : \n\t"+modelo.getLpEst().sizeN());
+					view.printMessage("Total de Vertices en el archivo : \n\t"+modelo.getWG().sizeN());
+					view.printMessage("Total de Arcos en el archivo : \n\t"+modelo.getMayorOBJComparendo().toString());
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 				break;
-				case 2:
+				/*case 2:
 					modelo.WeightedGraph();
 					view.printMessage("Grafo actualizado con arcos con peso");
 					break;
 				case 3:
 					modelo.writeGraph();
 					view.printMessage("Archivo guardado en /data/weightedGraph.txt!");
-					break;
+					break;*/
 			}
 		}
 		

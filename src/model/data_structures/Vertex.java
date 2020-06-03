@@ -5,6 +5,8 @@ import org.jetbrains.annotations.NotNull;
 public class Vertex<K extends Comparable<K>,V> implements Comparable<Vertex<K,V>> {
     private K id;
     private double lat;
+
+
     private double longi;
     private Bag<V> adj;
     short marked;
@@ -62,6 +64,23 @@ public class Vertex<K extends Comparable<K>,V> implements Comparable<Vertex<K,V>
     }
     public int compareTo(Vertex that){
         return this.id.compareTo((K) that.id);
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder arcs = new StringBuilder("[");
+        while(adj.iterator().hasNext()){
+            V edge = adj.iterator().next();
+            arcs.append(edge.toString()).append(",");
+        }
+        arcs.append("]");
+        return "Vertex{" +
+                "id=" + id +
+                ", lat=" + lat +
+                ", longi=" + longi +
+                ", adj=" + arcs +
+                ", marked=" + marked +
+                '}';
     }
 
 }

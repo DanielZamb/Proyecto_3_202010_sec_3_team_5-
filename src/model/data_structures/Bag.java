@@ -6,6 +6,15 @@ public class Bag<T> implements Iterable<T>{
     private Node first;
     private class Node{
         T item;
+
+        @Override
+        public String toString() {
+            return "Node{" +
+                    "item=" + item +
+                    ", next=" + next +
+                    '}';
+        }
+
         Node next;
     }
     public void add(T item){
